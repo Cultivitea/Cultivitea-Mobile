@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Cultivitea</string>
+    <string name="username">Username</string>
+    <string name="login">Login</string>
+    <string name="password">Password</string>
+    <string name="logo">Logo</string>
+    <string name="login_description">Please sign in to continue.</string>
+    <string name="signin">Sign In</string>
+    <string name="dont_have_account">"Don’t have an account? "</string>
+    <string name="signup">Sign Up</string>
+    <string name="email">Email</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="already_have_account">"Already have an account? "</string>
+    <string name="register">Register</string>
+    <string name="register_description">Please register to login.</string>
+</resources>
