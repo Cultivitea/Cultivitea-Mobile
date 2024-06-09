@@ -116,8 +116,6 @@ fun LoginScreen(onNavigateToRegister: () -> Unit) {
                         val image = if (passwordVisible)
                             Icons.Filled.Visibility
                         else Icons.Filled.VisibilityOff
-
-                        // Please provide localized description for accessibility services
                         val description = if (passwordVisible) "Hide password" else "Show password"
 
                         IconButton(onClick = {passwordVisible = !passwordVisible}){

@@ -50,12 +50,16 @@ android {
 }
 
 dependencies {
-    // Optional - Integration with ViewModels
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.1")
     implementation("androidx.compose.runtime:runtime-livedata")
     implementation("androidx.compose.ui:ui-text-google-fonts:1.6.7")
     implementation("androidx.compose.material:material-icons-extended")
-
+    val cameraxVersion = "1.3.1"
+    implementation ("androidx.camera:camera-core:${cameraxVersion}")
+    implementation ("androidx.camera:camera-camera2:${cameraxVersion}")
+    implementation ("androidx.camera:camera-view:${cameraxVersion}")
+    implementation ("androidx.camera:camera-lifecycle:$cameraxVersion")
+    implementation("io.coil-kt:coil-compose:2.6.0")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
