@@ -5,6 +5,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.util.Log
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
@@ -18,12 +19,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,30 +34,32 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
-import androidx.core.net.toUri
 import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.request.SuccessResult
+import com.cultivitea.frontend.helper.getFileFromUri
+import com.cultivitea.frontend.helper.uploadImage
 import com.cultivitea.frontend.ui.theme.PrimaryGreen
+import com.cultivitea.frontend.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 @Composable
-fun DetectorScreen() {
+fun DetectorScreen(viewModel: MainViewModel) {
     var imageUri by remember { mutableStateOf<Uri?>(null) }
+    var predictionResult by remember { mutableStateOf<String?>(null) }
+    var predictionSuggestion by remember { mutableStateOf<String?>(null) }
     val lensFacing = CameraSelector.LENS_FACING_BACK
     val lifecycleOwner = LocalLifecycleOwner.current
     val context = LocalContext.current
     val preview = Preview.Builder().build()
-    val previewView = remember {
-        PreviewView(context)
-    }
+    val previewView = remember { PreviewView(context) }
     val cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
-    val imageCapture = remember {
-        ImageCapture.Builder().build()
-    }
+    val imageCapture = remember { ImageCapture.Builder().build() }
     val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(lensFacing) {
@@ -82,7 +80,7 @@ fun DetectorScreen() {
             if (imageUri == null) {
                 AndroidView({ previewView }, modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 20.dp, vertical = 16.dp) )
+                    .padding(horizontal = 20.dp, vertical = 16.dp))
             } else {
                 Box(modifier = Modifier
                     .fillMaxSize()
@@ -98,9 +96,7 @@ fun DetectorScreen() {
                         modifier = Modifier
                             .align(Alignment.TopEnd)
                             .padding(horizontal = 8.dp)
-                            .clickable {
-                                imageUri = null
-                            }
+                            .clickable { imageUri = null }
                     )
                 }
             }
@@ -111,20 +107,55 @@ fun DetectorScreen() {
                 coroutineScope.launch {
                     captureImage(imageCapture, context) { uri ->
                         imageUri = uri
+                        uri?.let {
+                            uploadImage(context, it, viewModel)
+                        }
                     }
                 }
             },
             shape = RoundedCornerShape(4.dp),
-            modifier = Modifier.align(Alignment.CenterHorizontally).fillMaxWidth().padding(horizontal = 20.dp),
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp),
             colors = ButtonDefaults.outlinedButtonColors(
                 containerColor = Color.White,
-                contentColor = PrimaryGreen // Primary green color for text and outline
+                contentColor = PrimaryGreen
             ),
             border = BorderStroke(1.dp, PrimaryGreen)
         ) {
-            Text(text = "Scan",
-                style = MaterialTheme.typography.labelMedium.copy(fontSize = 18.sp, color = PrimaryGreen, fontWeight = FontWeight.Normal),)
+            Text(
+                text = "Scan",
+                style = MaterialTheme.typography.labelMedium.copy(
+                    fontSize = 18.sp,
+                    color = PrimaryGreen,
+                    fontWeight = FontWeight.Normal
+                ),
+            )
         }
+        Spacer(modifier = Modifier.height(16.dp))
+        if (predictionResult != null && predictionSuggestion != null) {
+            Column(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(horizontal = 20.dp)
+            ) {
+                Text(
+                    text = "Result: $predictionResult",
+                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                )
+                Text(
+                    text = "Suggestion: $predictionSuggestion",
+                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                )
+            }
+        }
+    }
+
+    viewModel.uploadResult.observe(LocalLifecycleOwner.current) { response ->
+        Log.d("DetectorScreen", "Response: $response")
+        predictionResult = response?.data?.result
+        predictionSuggestion = response?.data?.suggestion
     }
 }
 
@@ -158,9 +189,7 @@ private fun captureImage(imageCapture: ImageCapture, context: Context, onImageCa
         ContextCompat.getMainExecutor(context),
         object : ImageCapture.OnImageSavedCallback {
             override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                outputFileResults.savedUri?.let {
-                    onImageCaptured(it)
-                }
+                outputFileResults.savedUri?.let { onImageCaptured(it) }
             }
 
             override fun onError(exception: ImageCaptureException) {

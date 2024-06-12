@@ -5,19 +5,21 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.cultivitea.frontend.ui.screens.DetectorScreen
+import com.cultivitea.frontend.ui.screens.ForumScreen
 import com.cultivitea.frontend.ui.screens.LoginScreen
 import com.cultivitea.frontend.ui.screens.RegisterScreen
 import com.cultivitea.frontend.ui.theme.CultiviteaTheme
+import com.cultivitea.frontend.viewmodel.MainViewModel
 
 sealed class Screen(val route: String) {
     object Login : Screen("login")
     object Register : Screen("register")
     object Detector : Screen("detector")
-
+    object Forum : Screen("forum")
 }
 
 @Composable
-fun CultiviteaApp(startDestination: String = Screen.Login.route) {
+fun CultiviteaApp(viewModel: MainViewModel, startDestination: String = Screen.Login.route) {
     CultiviteaTheme {
         val navController = rememberNavController()
         NavHost(navController = navController, startDestination = startDestination) {
@@ -28,7 +30,10 @@ fun CultiviteaApp(startDestination: String = Screen.Login.route) {
                 RegisterScreen { navController.navigate(Screen.Login.route) }
             }
             composable(Screen.Detector.route) {
-                DetectorScreen()
+                DetectorScreen(viewModel)
+            }
+            composable(Screen.Forum.route) {
+                ForumScreen()
             }
         }
     }

@@ -15,3 +15,5 @@ val PrimaryBrown = Color(0xFF783E19)
 
 val SecondaryBrown = Color(0xFFBA9470)
 val PrimaryOrange = Color(0xFFC66828)
+
+val GrayInput = Color(0xFF9095A0)
