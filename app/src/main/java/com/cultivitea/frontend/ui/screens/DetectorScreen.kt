@@ -23,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,6 +41,7 @@ import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.request.SuccessResult
 import com.cultivitea.frontend.helper.uploadImage
+import com.cultivitea.frontend.ui.theme.PrimaryBrown
 import com.cultivitea.frontend.ui.theme.PrimaryGreen
 import com.cultivitea.frontend.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
@@ -59,101 +61,139 @@ fun DetectorScreen(viewModel: MainViewModel) {
     val cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
     val imageCapture = remember { ImageCapture.Builder().build() }
     val coroutineScope = rememberCoroutineScope()
+    var cameraProviderBound by remember { mutableStateOf(false) }
+    var isLoading by rememberSaveable { mutableStateOf(false) }
 
-    LaunchedEffect(lensFacing) {
-        val cameraProvider = context.getCameraProvider()
-        cameraProvider.unbindAll()
-        cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, preview, imageCapture)
-        preview.setSurfaceProvider(previewView.surfaceProvider)
+
+    LaunchedEffect(cameraProviderBound) {
+        if (!cameraProviderBound) {
+            val cameraProvider = context.getCameraProvider()
+            cameraProvider.unbindAll()
+            cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, preview, imageCapture)
+            preview.setSurfaceProvider(previewView.surfaceProvider)
+            cameraProviderBound = true
+        }
     }
 
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .verticalScroll(rememberScrollState())) {
-        Box(
-            contentAlignment = Alignment.TopCenter,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(400.dp)
-                .padding(16.dp)
-        ) {
-            if (imageUri == null) {
-                AndroidView({ previewView }, modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 20.dp, vertical = 16.dp))
-            } else {
-                Box(modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 20.dp, vertical = 16.dp)) {
-                    Image(
-                        bitmap = loadImageBitmap(context, imageUri!!),
-                        contentDescription = null,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "Close",
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .padding(horizontal = 8.dp)
-                            .clickable { imageUri = null }
-                    )
-                }
-            }
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        OutlinedButton(
-            onClick = {
-                coroutineScope.launch {
-                    captureImage(imageCapture, context) { uri ->
-                        imageUri = uri
-                        uri?.let {
-                            uploadImage(context, it, viewModel)
-                        }
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())) {
+            Box(
+                contentAlignment = Alignment.TopCenter,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(400.dp)
+                    .padding(16.dp)
+            ) {
+                if (imageUri == null) {
+                    AndroidView({ previewView }, modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 20.dp, vertical = 16.dp))
+                } else {
+                    Box(modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 20.dp, vertical = 16.dp)) {
+                        Image(
+                            bitmap = loadImageBitmap(context, imageUri!!),
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize()
+                        )
                     }
                 }
-            },
-            shape = RoundedCornerShape(4.dp),
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp),
-            colors = ButtonDefaults.outlinedButtonColors(
-                containerColor = Color.White,
-                contentColor = PrimaryGreen
-            ),
-            border = BorderStroke(1.dp, PrimaryGreen)
-        ) {
-            Text(
-                text = "Scan",
-                style = MaterialTheme.typography.labelMedium.copy(
-                    fontSize = 18.sp,
-                    color = PrimaryGreen,
-                    fontWeight = FontWeight.Normal
-                ),
-            )
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        if (predictionResult != null && predictionSuggestion != null) {
-            Column(
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            val color = if (imageUri == null) PrimaryGreen else Color.Red
+            OutlinedButton(
+
+                onClick = {
+                    if (imageUri == null) {
+                        isLoading = true
+                        coroutineScope.launch {
+                            captureImage(imageCapture, context) { uri ->
+                                imageUri = uri
+                                uri?.let {
+                                    uploadImage(context, it, viewModel)
+                                }
+                            }
+                        }
+                    } else {
+                        imageUri = null
+                        predictionResult = null
+                        predictionSuggestion = null
+                    }
+                },
+                shape = RoundedCornerShape(4.dp),
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    containerColor = Color.White,
+                    contentColor = color
+                ),
+                border = BorderStroke(1.dp, color)
+            ) {
+                Text(
+                    text = if (imageUri == null) "Scan" else "Delete",
+                    style = MaterialTheme.typography.labelMedium.copy(
+                        fontSize = 18.sp,
+                        color = color,
+                        fontWeight = FontWeight.Normal
+                    ),
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .fillMaxWidth()
                     .padding(horizontal = 20.dp)
             ) {
                 Text(
-                    text = "Result: $predictionResult",
-                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                    text = "Scan Result",
+                    style = MaterialTheme.typography.titleMedium.copy(fontSize = 24.sp, color = PrimaryBrown)
                 )
-                Text(
-                    text = "Suggestion: $predictionSuggestion",
-                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                )
+
+                if (predictionResult != null && predictionSuggestion != null) {
+                    val resultColor = if (predictionResult == "Tea Healthy") PrimaryGreen else Color.Red
+                    Spacer(modifier = Modifier.height(32.dp))
+                    Text(
+                        text = "$predictionResult",
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = resultColor
+                        ),
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                    Text(
+                        text = "$predictionSuggestion",
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
+                        ),
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                }
+            }
+        }
+
+        if (isLoading) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                CircularProgressIndicator()
             }
         }
     }
 
+
+
     viewModel.uploadResult.observe(LocalLifecycleOwner.current) { response ->
         Log.d("DetectorScreen", "Response: $response")
+        isLoading = false
         predictionResult = response?.data?.result
         predictionSuggestion = response?.data?.suggestion
     }
