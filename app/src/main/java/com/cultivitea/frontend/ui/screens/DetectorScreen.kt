@@ -16,7 +16,9 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
@@ -37,14 +39,10 @@ import androidx.core.graphics.drawable.toBitmap
 import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.request.SuccessResult
-import com.cultivitea.frontend.helper.getFileFromUri
 import com.cultivitea.frontend.helper.uploadImage
 import com.cultivitea.frontend.ui.theme.PrimaryGreen
 import com.cultivitea.frontend.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
-import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.asRequestBody
-import java.io.File
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -69,7 +67,9 @@ fun DetectorScreen(viewModel: MainViewModel) {
         preview.setSurfaceProvider(previewView.surfaceProvider)
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .verticalScroll(rememberScrollState())) {
         Box(
             contentAlignment = Alignment.TopCenter,
             modifier = Modifier

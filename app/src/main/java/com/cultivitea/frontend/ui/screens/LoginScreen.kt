@@ -1,12 +1,9 @@
 package com.cultivitea.frontend.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -14,19 +11,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,112 +26,227 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cultivitea.frontend.R
+import com.cultivitea.frontend.data.api.pref.UserModel
 import com.cultivitea.frontend.ui.composables.ClickableAuthText
 import com.cultivitea.frontend.ui.theme.PrimaryBrown
 import com.cultivitea.frontend.ui.theme.PrimaryGreen
+import com.cultivitea.frontend.viewmodel.MainViewModel
 
 @Composable
-fun LoginScreen(onNavigateToRegister: () -> Unit) {
-    var username by rememberSaveable { mutableStateOf("") }
+fun LoginScreen(
+    onNavigateToRegister: () -> Unit,
+    viewModel: MainViewModel,
+    onLoginSuccess: () -> Unit
+) {
+    var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
+    var loginError by rememberSaveable { mutableStateOf<String?>(null) }
+    var emailError by rememberSaveable { mutableStateOf<String?>(null) }
+    var passwordError by rememberSaveable { mutableStateOf<String?>(null) }
+    var isLoading by rememberSaveable { mutableStateOf(false) }
 
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 22.dp)
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.logo),
+                contentDescription = stringResource(id = R.string.logo),
+                modifier = Modifier.size(200.dp).padding(top = 64.dp, bottom = 30.dp)
+            )
 
-    Column(
-        modifier = Modifier.padding(vertical = 64.dp, horizontal = 22.dp),
-        horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.Start) {
+                Column(modifier = Modifier.padding(vertical = 16.dp)) {
+                    Text(
+                        text = stringResource(id = R.string.login),
+                        style = MaterialTheme.typography.titleMedium,
+                    )
 
-        Image(
-            painter = painterResource(id = R.drawable.logo),
-            contentDescription = stringResource(id = R.string.logo),
-            modifier = Modifier.size(200.dp).padding(bottom = 30.dp)
+                    Spacer(modifier = Modifier.padding(4.dp))
 
-        )
-
-        Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.Start){
-
-            Column(modifier = Modifier.padding(vertical = 16.dp)){
-                Text(
-                    text = stringResource(id = R.string.login),
-                    style = MaterialTheme.typography.titleMedium,
-                )
-
-                Spacer(modifier = Modifier.padding(4.dp))
-
-                Text(
-                    text = stringResource(id = R.string.login_description),
-                    style = MaterialTheme.typography.titleSmall,
-                )
-            }
-
-            Column(modifier = Modifier
-                .verticalScroll(rememberScrollState())
-                .weight(weight = 1f, fill = false)) {
-                Text(
-                    modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp),
-                    text =  stringResource(id = R.string.username),
-                    style = MaterialTheme.typography.labelSmall,
-                )
-
-                TextField(value = username,
-                    onValueChange = { username = it },
-                    modifier= Modifier
-                        .fillMaxWidth()
-                        .border(1.dp, PrimaryBrown, RoundedCornerShape(40.dp)),
-                    shape = RoundedCornerShape(40.dp),
-                    colors= TextFieldDefaults.colors(
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,),
-                )
+                    Text(
+                        text = stringResource(id = R.string.login_description),
+                        style = MaterialTheme.typography.titleSmall,
+                    )
+                }
 
                 Spacer(modifier = Modifier.padding(8.dp))
 
                 Text(
-                    modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp),
-                    text =  stringResource(id = R.string.password),
+                    text = stringResource(id = R.string.email),
                     style = MaterialTheme.typography.labelSmall,
                 )
 
-                TextField(value = password,
-                    onValueChange = { password = it },
+                TextField(
+                    value = email,
+                    onValueChange = {
+                        email = it
+                        emailError = null
+                    },
+                    isError = emailError != null,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(1.dp, if (emailError != null) Color.Red else PrimaryBrown, RoundedCornerShape(20.dp)),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = TextFieldDefaults.colors(
+                        errorContainerColor = Color.Transparent,
+                        errorIndicatorColor = Color.Transparent,
+                        focusedTextColor = Color.Black,
+                        unfocusedTextColor = Color.Black,
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                    ),
+                )
+                if (emailError != null) {
+                    Text(
+                        text = emailError ?: "",
+                        color = Color.Red,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(start = 16.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.padding(8.dp))
+
+                Text(
+                    text = stringResource(id = R.string.password),
+                    style = MaterialTheme.typography.labelSmall,
+                )
+
+                TextField(
+                    value = password,
+                    onValueChange = {
+                        password = it
+                        passwordError = null
+                    },
                     singleLine = true,
                     visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                     trailingIcon = {
                         val image = if (passwordVisible)
                             Icons.Filled.Visibility
-                        else Icons.Filled.VisibilityOff
+                        else
+                            Icons.Filled.VisibilityOff
+
                         val description = if (passwordVisible) "Hide password" else "Show password"
 
-                        IconButton(onClick = {passwordVisible = !passwordVisible}){
-                            Icon(imageVector  = image, description)
+                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                            Icon(imageVector = image, contentDescription = description)
                         }
                     },
-                    modifier= Modifier
+                    isError = passwordError != null,
+                    modifier = Modifier
                         .fillMaxWidth()
-                        .border(1.dp, PrimaryBrown, RoundedCornerShape(40.dp)),
-                    shape = RoundedCornerShape(40.dp),
-                    colors= TextFieldDefaults.colors(
+                        .border(1.dp, if (passwordError != null) Color.Red else PrimaryBrown, RoundedCornerShape(20.dp)),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = TextFieldDefaults.colors(
+                        errorContainerColor = Color.Transparent,
+                        errorIndicatorColor = Color.Transparent,
+                        focusedTextColor = Color.Black,
+                        unfocusedTextColor = Color.Black,
                         focusedContainerColor = Color.Transparent,
                         unfocusedContainerColor = Color.Transparent,
                         focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,),
+                        unfocusedIndicatorColor = Color.Transparent,
+                    ),
                 )
+                if (passwordError != null) {
+                    Text(
+                        text = passwordError ?: "",
+                        color = Color.Red,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(start = 16.dp)
+                    )
+                }
             }
 
+            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(vertical = 25.dp)) {
+                Button(
+                    onClick = {
+                        isLoading = true
+                        viewModel.loginUser(email, password) { loginResponse, error ->
+                            isLoading = false
+                            if (loginResponse != null && !loginResponse.error!!) {
+                                val userCredential = loginResponse.userCredential
+                                if (userCredential != null) {
+                                    val user = UserModel(
+                                        userCredential.token!!,
+                                        userCredential.uid!!,
+                                        userCredential.phoneNumber!!,
+                                        userCredential.imageUrl!!,
+                                        userCredential.dateOfBirth!!,
+                                        userCredential.email!!,
+                                        userCredential.username!!,
+                                        true
+                                    )
+                                    viewModel.saveSession(user)
+                                    onLoginSuccess()
+                                }
+                            } else {
+                                loginError = loginResponse?.message ?: "Unknown error"
+                                loginResponse?.details?.let { det ->
+                                    emailError = det["email"]
+                                    passwordError = det["password"]
+                                }
+                                Log.d("LoginScreen", "Response: $loginResponse")
+                                Log.d("LoginScreen", "Error registering user: $emailError, $passwordError")
+                            }
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen),
+                    shape = RoundedCornerShape(4.dp)
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.signin),
+                        modifier = Modifier.padding(horizontal = 40.dp, vertical = 4.dp),
+                        style = MaterialTheme.typography.labelMedium.copy(
+                            fontSize = 18.sp,
+                            color = Color.White,
+                            fontWeight = FontWeight.Normal
+                        )
+                    )
+                }
 
+                Spacer(modifier = Modifier.padding(8.dp))
+
+                ClickableAuthText(onNavigateToRegister, R.string.sign_up, R.string.dont_have_account)
+            }
         }
 
-        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(vertical = 25.dp) ) {
-            Button(onClick = { /*TODO*/ }, colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen), shape = RoundedCornerShape(4.dp)) {
-                Text(text = stringResource(id = R.string.signin), modifier = Modifier.padding(horizontal = 40.dp, vertical = 4.dp), style = MaterialTheme.typography.labelMedium.copy(fontSize = 18.sp, color = Color.White, fontWeight = FontWeight.Normal))
+        if (loginError != null) {
+            AlertDialog(
+                onDismissRequest = { loginError = null },
+                confirmButton = {
+                    TextButton(onClick = { loginError = null }) {
+                        Text("OK")
+                    }
+                },
+                text = {
+                    Text(
+                        loginError ?: "",
+                        style = MaterialTheme.typography.labelMedium.copy(
+                            fontSize = 18.sp,
+                            color = Color.Black,
+                            fontWeight = FontWeight.Normal
+                        )
+                    )
+                }
+            )
+        }
+
+        if (isLoading) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                CircularProgressIndicator()
             }
-
-            Spacer(modifier = Modifier.padding(8.dp))
-
-            ClickableAuthText(onNavigateToRegister, R.string.sign_up, R.string.dont_have_account)
         }
     }
 }

@@ -24,10 +24,18 @@ fun CultiviteaApp(viewModel: MainViewModel, startDestination: String = Screen.Lo
         val navController = rememberNavController()
         NavHost(navController = navController, startDestination = startDestination) {
             composable(Screen.Login.route) {
-                LoginScreen { navController.navigate(Screen.Register.route) }
+                LoginScreen(
+                    onNavigateToRegister = { navController.navigate(Screen.Register.route) },
+                    viewModel = viewModel,
+                    onLoginSuccess = {
+                        navController.navigate(Screen.Detector.route) {
+                            popUpTo(Screen.Login.route) { inclusive = true }
+                        }
+                    }
+                )
             }
             composable(Screen.Register.route) {
-                RegisterScreen { navController.navigate(Screen.Login.route) }
+                RegisterScreen (onNavigateToLogin = { navController.navigate(Screen.Login.route) }, viewModel)
             }
             composable(Screen.Detector.route) {
                 DetectorScreen(viewModel)

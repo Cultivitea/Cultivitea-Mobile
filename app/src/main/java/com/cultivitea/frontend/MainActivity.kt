@@ -29,13 +29,25 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        viewModel.getSession().observe(this) { user ->
+            if (!user.isLogin) {
+                setContent {
+                    CultiviteaApp(viewModel = viewModel, startDestination = Screen.Login.route)
+                }
+            } else {
+                requestCameraPermission()
+            }
+        }
+    }
+
+    private fun requestCameraPermission() {
         when (PackageManager.PERMISSION_GRANTED) {
             ContextCompat.checkSelfPermission(
                 this,
                 Manifest.permission.CAMERA
             ) -> {
                 setContent {
-                    CultiviteaApp(viewModel = viewModel, startDestination = Screen.Forum.route)
+                    CultiviteaApp(viewModel = viewModel, startDestination = Screen.Detector.route)
                 }
             }
             else -> {
