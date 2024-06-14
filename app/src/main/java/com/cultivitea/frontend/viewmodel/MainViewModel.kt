@@ -20,6 +20,7 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
     private val _uploadResult = MutableLiveData<PredictionResponse>()
     val uploadResult: LiveData<PredictionResponse> = _uploadResult
 
+
     fun predict(file: MultipartBody.Part) {
         viewModelScope.launch {
             try {
@@ -77,6 +78,32 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
 
     fun getSession(): LiveData<UserModel> {
         return repository.getSession().asLiveData()
+    }
+
+     fun getProfile(token: String, id: String)  {
+        viewModelScope.launch {
+            try {
+                Log.d("MainViewModel", "Getting profile...")
+                val response = repository.getProfile(token, id)
+                Log.d("MainViewModel", "Profile result: ${response.userCredential}")
+                if (response?.userCredential != null){
+                    val user = UserModel(
+                        token,
+                        response.userCredential.uid!!,
+                        response.userCredential.phoneNumber!!,
+                        response.userCredential.imageUrl!!,
+                        response.userCredential.dateOfBirth!!,
+                        response.userCredential.email!!,
+                        response.userCredential.username!!,
+                        true
+                    )
+                    saveSession(user)
+                }
+            } catch (e: HttpException) {
+                Log.e("MainViewModel", "Error saving session: ${e.message}", e)
+
+            }
+        }
     }
 
     fun registerUser(username: String, email: String, password: String, onRegisterResult: (SignUpResponse?, String?) -> Unit) {

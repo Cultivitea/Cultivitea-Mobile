@@ -7,6 +7,7 @@ import androidx.navigation.compose.rememberNavController
 import com.cultivitea.frontend.ui.screens.DetectorScreen
 import com.cultivitea.frontend.ui.screens.ForumScreen
 import com.cultivitea.frontend.ui.screens.LoginScreen
+import com.cultivitea.frontend.ui.screens.ProfileScreen
 import com.cultivitea.frontend.ui.screens.RegisterScreen
 import com.cultivitea.frontend.ui.theme.CultiviteaTheme
 import com.cultivitea.frontend.viewmodel.MainViewModel
@@ -16,6 +17,7 @@ sealed class Screen(val route: String) {
     object Register : Screen("register")
     object Detector : Screen("detector")
     object Forum : Screen("forum")
+    object Profile : Screen("profile")
 }
 
 @Composable
@@ -42,6 +44,9 @@ fun CultiviteaApp(viewModel: MainViewModel, startDestination: String = Screen.Lo
             }
             composable(Screen.Forum.route) {
                 ForumScreen()
+            }
+            composable(Screen.Profile.route) {
+                ProfileScreen(viewModel)
             }
         }
     }

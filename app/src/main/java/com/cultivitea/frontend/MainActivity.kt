@@ -21,7 +21,7 @@ class MainActivity : ComponentActivity() {
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
                 setContent {
-                    CultiviteaApp(viewModel = viewModel, startDestination = Screen.Detector.route)
+                    CultiviteaApp(viewModel = viewModel, startDestination = Screen.Profile.route)
                 }
             } else {
             }
@@ -47,7 +47,7 @@ class MainActivity : ComponentActivity() {
                 Manifest.permission.CAMERA
             ) -> {
                 setContent {
-                    CultiviteaApp(viewModel = viewModel, startDestination = Screen.Detector.route)
+                    CultiviteaApp(viewModel = viewModel, startDestination = Screen.Profile.route)
                 }
             }
             else -> {

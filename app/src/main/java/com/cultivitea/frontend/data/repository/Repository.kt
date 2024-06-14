@@ -27,6 +27,11 @@ class Repository private constructor(
         return userPreference.getSession()
     }
 
+    suspend fun getProfile(token: String, id: String): LoginResponse {
+        val accessToken = "access_token=" + token
+        return apiService.getProfile(accessToken, id)
+    }
+
     suspend fun logout() {
         userPreference.logout()
     }

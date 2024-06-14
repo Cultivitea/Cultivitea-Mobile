@@ -175,17 +175,7 @@ fun LoginScreen(
                             if (loginResponse != null && !loginResponse.error!!) {
                                 val userCredential = loginResponse.userCredential
                                 if (userCredential != null) {
-                                    val user = UserModel(
-                                        userCredential.token!!,
-                                        userCredential.uid!!,
-                                        userCredential.phoneNumber!!,
-                                        userCredential.imageUrl!!,
-                                        userCredential.dateOfBirth!!,
-                                        userCredential.email!!,
-                                        userCredential.username!!,
-                                        true
-                                    )
-                                    viewModel.saveSession(user)
+                                    viewModel.getProfile(userCredential.token!!, userCredential.uid!!)
                                     onLoginSuccess()
                                 }
                             } else {
