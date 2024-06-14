@@ -23,9 +23,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.cultivitea.frontend.R
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
@@ -120,5 +131,27 @@ fun VideoCardPreview(){
         description = "Description",
         videoUrl = "https://www.youtube.com/watch?v=VkCKHgtsQZk",
         thumbnailRes = 1
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CustomAppBar(screenTitle: String, onBackClick: () -> Unit = {}) {
+    CenterAlignedTopAppBar(
+        title = {
+            Text(text = screenTitle, )
+        },
+        navigationIcon = {
+            IconButton(onClick = onBackClick, colors = IconButtonDefaults.iconButtonColors(
+                contentColor = PrimaryGreen
+            ) ) {
+                Icon(Icons.Filled.ArrowBack, contentDescription = "Back", )
+
+            }
+        },
+        colors = TopAppBarDefaults.smallTopAppBarColors(
+            containerColor = Color.White,
+            titleContentColor = PrimaryGreen,
+        ),
     )
 }

@@ -3,12 +3,12 @@ package com.cultivitea.frontend.data.api.response
 import com.google.gson.annotations.SerializedName
 
 data class PredictionResponse(
-    @field:SerializedName("status")
-    val status: String,
+    @field:SerializedName("error")
+    val error: Boolean,
     @field:SerializedName("message")
     val message: String,
     @field:SerializedName("data")
-    val data: PredictionResult
+    val data: PredictionResult?
 )
 
 data class PredictionResult (

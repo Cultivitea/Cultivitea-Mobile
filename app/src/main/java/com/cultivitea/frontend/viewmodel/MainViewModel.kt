@@ -27,8 +27,14 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
                 val response = repository.predict(file)
                 Log.d("MainViewModel", "Prediction result: ${response.data}")
                 _uploadResult.postValue(response)
-            } catch (e: Exception) {
+            } catch (e: HttpException) {
                 Log.e("MainViewModel", "Error predicting image: ${e.message}", e)
+                val response = parsePredictException(e)
+                if (response != null){
+                    _uploadResult.postValue(response!!)
+                } else {
+                    _uploadResult.postValue(PredictionResponse(error = true, message = e.message(), null))
+                }
             }
         }
     }
@@ -112,6 +118,19 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
         return if (errorBody != null) {
             try {
                 Gson().fromJson(errorBody, LoginResponse::class.java)
+            } catch (jsonException: JSONException) {
+                null
+            }
+        } else {
+            null
+        }
+    }
+
+    private fun parsePredictException(e: HttpException): PredictionResponse? {
+        val errorBody = e.response()?.errorBody()?.string()
+        return if (errorBody != null) {
+            try {
+                Gson().fromJson(errorBody, PredictionResponse::class.java)
             } catch (jsonException: JSONException) {
                 null
             }
