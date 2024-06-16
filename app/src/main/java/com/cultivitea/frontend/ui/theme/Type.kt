@@ -56,6 +56,17 @@ val Typography = Typography(
         color = PrimaryGreen
     ),
 
+
+    // Discussion Title
+    titleLarge = TextStyle(
+        fontFamily = fontFamilyInter,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 18.sp,
+        lineHeight = 20.sp,
+        letterSpacing = 0.15.sp,
+        color = PrimaryGreen
+    ),
+
     titleSmall = TextStyle(
         fontFamily = fontFamilyEpilogue,
         fontWeight = FontWeight.SemiBold,

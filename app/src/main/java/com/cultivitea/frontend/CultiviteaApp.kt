@@ -4,12 +4,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.cultivitea.frontend.data.api.response.DiscussionItem
 import com.cultivitea.frontend.ui.composables.BottomNavigationBar
 import com.cultivitea.frontend.ui.screens.DetectorScreen
+import com.cultivitea.frontend.ui.screens.DiscussionDetailScreen
 import com.cultivitea.frontend.ui.screens.EditProfileScreen
 import com.cultivitea.frontend.ui.screens.ForumScreen
 import com.cultivitea.frontend.ui.screens.LoginScreen
@@ -17,6 +21,7 @@ import com.cultivitea.frontend.ui.screens.ProfileScreen
 import com.cultivitea.frontend.ui.screens.RegisterScreen
 import com.cultivitea.frontend.ui.theme.CultiviteaTheme
 import com.cultivitea.frontend.viewmodel.MainViewModel
+import com.google.gson.Gson
 
 sealed class Screen(val route: String) {
     object Login : Screen("login")
@@ -61,13 +66,21 @@ fun CultiviteaApp(viewModel: MainViewModel, startDestination: String = Screen.Lo
                     DetectorScreen(viewModel)
                 }
                 composable(Screen.Forum.route) {
-                    ForumScreen()
+                    ForumScreen(navController, viewModel)
                 }
                 composable(Screen.Profile.route) {
                     ProfileScreen(navController, viewModel)
                 }
                 composable(Screen.EditProfile.route) {
                     EditProfileScreen(navController, viewModel)
+                }
+                composable(
+                    "discussionDetail/{discussionItem}",
+                    arguments = listOf(navArgument("discussionItem") { type = NavType.StringType })
+                ) { backStackEntry ->
+                    val discussionJson = backStackEntry.arguments?.getString("discussionItem")
+                    val discussionItem = Gson().fromJson(discussionJson, DiscussionItem::class.java)
+                    DiscussionDetailScreen(discussionItem, viewModel)
                 }
             }
         }

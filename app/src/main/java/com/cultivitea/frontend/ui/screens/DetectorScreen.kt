@@ -110,16 +110,15 @@ fun DetectorScreen(viewModel: MainViewModel) {
                     ) {
                         if (imageUri == null) {
                             AndroidView({ previewView }, modifier = Modifier
-                                .fillMaxSize()
-                                .padding(horizontal = 20.dp, vertical = 16.dp))
+
+                                .padding(horizontal = 20.dp, vertical = 16.dp).requiredHeight(150.dp))
                         } else {
                             Box(modifier = Modifier
-                                .fillMaxSize()
                                 .padding(horizontal = 20.dp, vertical = 16.dp)) {
                                 Image(
                                     bitmap = loadImageBitmap(context, imageUri!!),
                                     contentDescription = null,
-                                    modifier = Modifier.fillMaxSize()
+
                                 )
                             }
                         }

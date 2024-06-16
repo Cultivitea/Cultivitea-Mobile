@@ -1,5 +1,7 @@
 package com.cultivitea.frontend.data.api.remote
 
+import com.cultivitea.frontend.data.api.response.CommentResponse
+import com.cultivitea.frontend.data.api.response.DiscussionResponse
 import com.cultivitea.frontend.data.api.response.EditProfileResponse
 import com.cultivitea.frontend.data.api.response.PredictionResponse
 import com.cultivitea.frontend.data.api.response.LoginResponse
@@ -65,4 +67,13 @@ interface ApiService {
         @Field("phoneNumber") phoneNumber: String,
         @Field("dateOfBirth") dateOfBirth: String,
     ): EditProfileResponse
+
+    @GET("discussions")
+    suspend fun getDiscussions(
+    ): DiscussionResponse
+
+    @GET("discussions/{id}/comments")
+    suspend fun getDiscussionsComments(
+        @Path("id") id: String,
+    ): CommentResponse
 }

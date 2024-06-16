@@ -32,6 +32,8 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -54,13 +56,17 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat.startActivity
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.compose.rememberAsyncImagePainter
-import com.cultivitea.frontend.ui.nav.Screen
+import com.cultivitea.frontend.data.api.response.CommentItem
+import com.cultivitea.frontend.data.api.response.DiscussionItem
+import com.cultivitea.frontend.helper.getTimeAgo
+import com.cultivitea.frontend.ui.nav.NavItem
 import com.cultivitea.frontend.ui.theme.GrayInput
 import com.cultivitea.frontend.ui.theme.NavBrown
 import com.cultivitea.frontend.ui.theme.PrimaryBrown
@@ -89,9 +95,9 @@ fun VideoCard(title: String, description: String, videoUrl: String, thumbnailRes
     val openYouTube = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { }
 
     OutlinedCard(shape = RoundedCornerShape(4.dp), modifier= Modifier
-        .padding(8.dp)
+
         .fillMaxWidth(), border = BorderStroke(1.dp, PrimaryBrown)) {
-        Row(modifier = Modifier.padding(8.dp)) {
+        Row(modifier = Modifier.padding(12.dp)) {
             Column {
                 Text(title, style = MaterialTheme.typography.titleMedium, color = PrimaryGreen, fontSize = 18.sp)
                 Text(description, style = MaterialTheme.typography.bodyMedium, color = GrayInput)
@@ -126,19 +132,19 @@ fun VideoCard(title: String, description: String, videoUrl: String, thumbnailRes
     }
 }
 
-@Composable
-fun DiscussionCard(username: String, publishedAt: String, title: String){
-    OutlinedCard(shape = RoundedCornerShape(4.dp), modifier= Modifier
-        .padding(8.dp)
-        .fillMaxWidth(), border = BorderStroke(1.dp, PrimaryBrown)) {
-        Column{
-            Row {
-
-            }
-            Text(title, style = MaterialTheme.typography.titleMedium, color = PrimaryGreen, fontSize = 18.sp)
-        }
-    }
-}
+//@Composable
+//fun DiscussionCard(username: String, publishedAt: String, title: String){
+//    OutlinedCard(shape = RoundedCornerShape(4.dp), modifier= Modifier
+//        .padding(8.dp)
+//        .fillMaxWidth(), border = BorderStroke(1.dp, PrimaryBrown)) {
+//        Column{
+//            Row {
+//
+//            }
+//            Text(title, style = MaterialTheme.typography.titleMedium, color = PrimaryGreen, fontSize = 18.sp)
+//        }
+//    }
+//}
 
 @Preview
 @Composable
@@ -215,9 +221,9 @@ fun ProfileImage(imageUrl: String?) {
 @Composable
 fun BottomNavigationBar(navController: NavController) {
     val items = listOf(
-        Screen.Detector,
-        Screen.Forum,
-        Screen.Profile
+        NavItem.Detector,
+        NavItem.Forum,
+        NavItem.Profile
     )
     NavigationBar(
         contentColor = PrimaryBrown,
@@ -250,4 +256,58 @@ fun BottomNavigationBar(navController: NavController) {
             )
         }
     }
+}
+
+@Composable
+fun DiscussionCard(item: DiscussionItem,  onClick: () -> Unit){
+    val timeAgo = getTimeAgo(item.createdAt!!)
+    Card(shape = RoundedCornerShape(4.dp), border = BorderStroke(1.dp, PrimaryBrown), colors = CardDefaults.cardColors(containerColor = Color.White), modifier = Modifier
+            .fillMaxWidth().clickable { onClick() }){
+        Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 12.dp)){
+            Row{
+                Text(text = item.creator!! + " - ", style = MaterialTheme.typography.labelSmall.copy(
+                    fontSize = 12.sp,
+                    color = GrayInput,
+                    fontWeight = FontWeight.Normal
+                ), )
+                Text(text = timeAgo, style = MaterialTheme.typography.labelSmall.copy(
+                    fontSize = 12.sp,
+                    color = GrayInput,
+                    fontWeight = FontWeight.Normal
+                ), )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(text = item.title!!, style = MaterialTheme.typography.titleLarge )
+        }
+
+    }
+}
+
+@Preview
+@Composable
+fun DiscussionCardPreview(){
+//    DiscussionCard(DiscussionItem("2024-06-16T08:13:13.870Z", "123", "John Doe", "123", "Title", "Content"))
+    DiscussionCard(DiscussionItem("2024-06-16T08:13:13.870Z", "123", "John Doe", "123", "Title", "Content"), {})
+}
+
+@Composable
+fun CommentCard(item: CommentItem){
+    Card(shape = RoundedCornerShape(4.dp), border = BorderStroke(1.dp, PrimaryBrown), colors = CardDefaults.cardColors(containerColor = Color.White), modifier = Modifier.fillMaxWidth()){
+        Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 12.dp)){
+            Text(item.creator!!, style = MaterialTheme.typography.labelSmall.copy(
+                fontSize = 12.sp,
+                color = GrayInput,
+                fontWeight = FontWeight.Normal
+            ), )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(item.content!!, style = MaterialTheme.typography.labelMedium.copy(color = Color.Black, fontSize = 10.sp, fontWeight = FontWeight.Light) )
+        }
+
+    }
+}
+
+@Preview
+@Composable
+fun CommentCardPreview(){
+    CommentCard(CommentItem("2024-06-16T08:13:13.870Z", "123", "John Doe", "123", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."))
 }

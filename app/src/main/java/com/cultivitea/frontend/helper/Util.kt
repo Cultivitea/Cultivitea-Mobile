@@ -12,6 +12,11 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
 fun getFileFromUri(context: Context, uri: Uri): File? {
     val contentResolver = context.contentResolver
@@ -51,4 +56,43 @@ fun uploadImage(context: Context, uri: Uri, viewModel: MainViewModel) {
         val multipartBody = MultipartBody.Part.createFormData("image", it.name, requestFile)
         viewModel.predict(multipartBody)
     }
+}
+
+fun getTimeAgo(createdAt: String): String {
+    val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+    sdf.timeZone = TimeZone.getTimeZone("UTC")
+
+    try {
+        val date = sdf.parse(createdAt)
+        val now = Date()
+
+        val diff = now.time - date.time
+        val days = diff / (1000 * 60 * 60 * 24)
+
+        return when {
+            days > 6 -> {
+                val formattedDate = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+                formattedDate.format(date)
+            }
+            days > 0 -> "${days.toInt()} ${if (days.toInt() == 1) "day" else "days"} ago"
+            else -> {
+                val seconds = diff / 1000
+                val minutes = seconds / 60
+                val hours = minutes / 60
+
+                when {
+                    hours > 0 -> "${hours.toInt()} ${if (hours.toInt() == 1) "hour" else "hours"} ago"
+                    minutes > 0 -> "${minutes.toInt()} ${if (minutes.toInt() == 1) "minute" else "minutes"} ago"
+                    else -> "just now"
+                }
+            }
+        }
+    } catch (e: ParseException) {
+        e.printStackTrace()
+        return createdAt
+    }
+}
+
+fun pluralize(value: Long, unit: String): String {
+    return if (value == 1L) "$value $unit" else "$value ${unit}s"
 }

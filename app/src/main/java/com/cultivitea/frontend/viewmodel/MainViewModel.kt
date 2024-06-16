@@ -3,6 +3,8 @@ package com.cultivitea.frontend.viewmodel
 import android.util.Log
 import androidx.lifecycle.*
 import com.cultivitea.frontend.data.api.pref.UserModel
+import com.cultivitea.frontend.data.api.response.CommentItem
+import com.cultivitea.frontend.data.api.response.DiscussionItem
 import com.cultivitea.frontend.data.api.response.EditProfileResponse
 import com.cultivitea.frontend.data.api.response.PredictionResponse
 import com.cultivitea.frontend.data.api.response.LoginResponse
@@ -21,8 +23,16 @@ import java.io.IOException
 
 class MainViewModel(private val repository: Repository) : ViewModel() {
 
+    private val _discussions = MutableLiveData<List<DiscussionItem>>()
+    val discussions: LiveData<List<DiscussionItem>> = _discussions
+
     private val _uploadResult = MutableLiveData<PredictionResponse>()
     val uploadResult: LiveData<PredictionResponse> = _uploadResult
+
+    private val _comments = MutableLiveData<List<CommentItem>>()
+    val comments: LiveData<List<CommentItem>> = _comments
+
+
 
 //    private val _editProfileResult = MutableLiveData<EditProfileResponse?>()
 //    val editProfileResult: LiveData<EditProfileResponse?> = _editProfileResult
@@ -190,6 +200,44 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
                 onRegisterResult(null, "Network error: ${e.message}")
             } catch (e: Exception) {
                 onRegisterResult(null, "Unexpected error: ${e.message}")
+            }
+        }
+    }
+
+    fun getAllDiscussions() {
+        viewModelScope.launch {
+            try {
+                val response = repository.getDiscussions()
+                if (!response.error!!) {
+                    _discussions.postValue(response.data!!)
+                } else {
+                    Log.e("MainViewModel", "Error fetching discussions: ${response.message}")
+                }
+            } catch (e: HttpException) {
+                Log.e("MainViewModel", "HTTP error fetching discussions: ${e.message}", e)
+            } catch (e: IOException) {
+                Log.e("MainViewModel", "Network error fetching discussions: ${e.message}", e)
+            } catch (e: Exception) {
+                Log.e("MainViewModel", "Unexpected error fetching discussions: ${e.message}", e)
+            }
+        }
+    }
+
+    fun getComments(discussionId: String) {
+        viewModelScope.launch {
+            try {
+                val response = repository.getDiscussionsComments(discussionId)
+                if (!response.error!!) {
+                    _comments.postValue(response.data!!)
+                } else {
+                    Log.e("MainViewModel", "Error fetching comments: ${response.message}")
+                }
+            } catch (e: HttpException) {
+                Log.e("MainViewModel", "HTTP error fetching comments: ${e.message}", e)
+            } catch (e: IOException) {
+                Log.e("MainViewModel", "Network error fetching comments: ${e.message}", e)
+            } catch (e: Exception) {
+                Log.e("MainViewModel", "Unexpected error fetching comments: ${e.message}", e)
             }
         }
     }

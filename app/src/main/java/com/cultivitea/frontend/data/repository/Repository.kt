@@ -3,6 +3,8 @@ package com.cultivitea.frontend.data.repository
 import com.cultivitea.frontend.data.api.pref.UserModel
 import com.cultivitea.frontend.data.api.pref.UserPreference
 import com.cultivitea.frontend.data.api.remote.ApiService
+import com.cultivitea.frontend.data.api.response.CommentResponse
+import com.cultivitea.frontend.data.api.response.DiscussionResponse
 import com.cultivitea.frontend.data.api.response.EditProfileResponse
 import com.cultivitea.frontend.data.api.response.PredictionResponse
 import com.cultivitea.frontend.data.api.response.LoginResponse
@@ -67,6 +69,14 @@ class Repository private constructor(
 
     suspend fun logout() {
         userPreference.logout()
+    }
+
+    suspend fun getDiscussionsComments(id: String): CommentResponse {
+        return apiService.getDiscussionsComments(id)
+    }
+
+    suspend fun getDiscussions() : DiscussionResponse {
+        return apiService.getDiscussions()
     }
 
     companion object {

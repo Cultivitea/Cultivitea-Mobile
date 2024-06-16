@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    id("kotlin-parcelize")
 }
 
 android {
@@ -59,6 +60,7 @@ dependencies {
     implementation("androidx.compose.runtime:runtime-livedata")
     implementation("androidx.compose.ui:ui-text-google-fonts:1.6.7")
     implementation("androidx.compose.material:material-icons-extended")
+    implementation(libs.androidx.material3.android)
     val cameraxVersion = "1.3.1"
     implementation ("androidx.camera:camera-core:${cameraxVersion}")
     implementation ("androidx.camera:camera-camera2:${cameraxVersion}")
@@ -72,7 +74,7 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
+//    implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.compose)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
