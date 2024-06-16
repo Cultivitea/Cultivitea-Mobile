@@ -1,9 +1,14 @@
 package com.cultivitea.frontend
 
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.cultivitea.frontend.ui.composables.BottomNavigationBar
 import com.cultivitea.frontend.ui.screens.DetectorScreen
 import com.cultivitea.frontend.ui.screens.EditProfileScreen
 import com.cultivitea.frontend.ui.screens.ForumScreen
@@ -26,33 +31,46 @@ sealed class Screen(val route: String) {
 fun CultiviteaApp(viewModel: MainViewModel, startDestination: String = Screen.Login.route) {
     CultiviteaTheme {
         val navController = rememberNavController()
-        NavHost(navController = navController, startDestination = startDestination) {
-            composable(Screen.Login.route) {
-                LoginScreen(
-                    onNavigateToRegister = { navController.navigate(Screen.Register.route) },
-                    viewModel = viewModel,
-                    onLoginSuccess = {
-                        navController.navigate(Screen.Detector.route) {
-                            popUpTo(Screen.Login.route) { inclusive = true }
+        Scaffold(
+            bottomBar = {
+                if (navController.currentBackStackEntryAsState().value?.destination?.route in listOf(
+                        Screen.Detector.route,
+                        Screen.Forum.route,
+                        Screen.Profile.route
+                    )) {
+                    BottomNavigationBar(navController)
+                }
+            }
+        ) { innerPadding ->
+            NavHost(navController = navController, startDestination = startDestination, Modifier.padding(innerPadding)) {
+                composable(Screen.Login.route) {
+                    LoginScreen(
+                        onNavigateToRegister = { navController.navigate(Screen.Register.route) },
+                        viewModel = viewModel,
+                        onLoginSuccess = {
+                            navController.navigate(Screen.Detector.route) {
+                                popUpTo(Screen.Login.route) { inclusive = true }
+                            }
                         }
-                    }
-                )
-            }
-            composable(Screen.Register.route) {
-                RegisterScreen (onNavigateToLogin = { navController.navigate(Screen.Login.route) }, viewModel)
-            }
-            composable(Screen.Detector.route) {
-                DetectorScreen(viewModel)
-            }
-            composable(Screen.Forum.route) {
-                ForumScreen()
-            }
-            composable(Screen.Profile.route) {
-                ProfileScreen(navController, viewModel)
-            }
-            composable(Screen.EditProfile.route){
-                EditProfileScreen(navController, viewModel)
+                    )
+                }
+                composable(Screen.Register.route) {
+                    RegisterScreen(onNavigateToLogin = { navController.navigate(Screen.Login.route) }, viewModel)
+                }
+                composable(Screen.Detector.route) {
+                    DetectorScreen(viewModel)
+                }
+                composable(Screen.Forum.route) {
+                    ForumScreen()
+                }
+                composable(Screen.Profile.route) {
+                    ProfileScreen(navController, viewModel)
+                }
+                composable(Screen.EditProfile.route) {
+                    EditProfileScreen(navController, viewModel)
+                }
             }
         }
     }
 }
+
