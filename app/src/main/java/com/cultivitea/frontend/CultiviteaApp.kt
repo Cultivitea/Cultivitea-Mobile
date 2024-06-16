@@ -12,6 +12,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.cultivitea.frontend.data.api.response.DiscussionItem
 import com.cultivitea.frontend.ui.composables.BottomNavigationBar
+import com.cultivitea.frontend.ui.screens.AddDiscussionScreen
 import com.cultivitea.frontend.ui.screens.DetectorScreen
 import com.cultivitea.frontend.ui.screens.DiscussionDetailScreen
 import com.cultivitea.frontend.ui.screens.EditProfileScreen
@@ -30,6 +31,7 @@ sealed class Screen(val route: String) {
     object Forum : Screen("forum")
     object Profile : Screen("profile")
     object EditProfile : Screen("editprofile")
+    object AddDiscussion : Screen("addDiscussion")
 }
 
 @Composable
@@ -74,13 +76,16 @@ fun CultiviteaApp(viewModel: MainViewModel, startDestination: String = Screen.Lo
                 composable(Screen.EditProfile.route) {
                     EditProfileScreen(navController, viewModel)
                 }
+                composable(Screen.AddDiscussion.route) {
+                    AddDiscussionScreen(navController, viewModel) // Added AddDiscussionScreen composable
+                }
                 composable(
                     "discussionDetail/{discussionItem}",
                     arguments = listOf(navArgument("discussionItem") { type = NavType.StringType })
                 ) { backStackEntry ->
                     val discussionJson = backStackEntry.arguments?.getString("discussionItem")
                     val discussionItem = Gson().fromJson(discussionJson, DiscussionItem::class.java)
-                    DiscussionDetailScreen(discussionItem, viewModel)
+                    DiscussionDetailScreen(navController, discussionItem, viewModel)
                 }
             }
         }

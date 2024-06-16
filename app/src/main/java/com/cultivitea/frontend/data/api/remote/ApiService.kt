@@ -1,5 +1,7 @@
 package com.cultivitea.frontend.data.api.remote
 
+import com.cultivitea.frontend.data.api.response.AddCommentResponse
+import com.cultivitea.frontend.data.api.response.AddDiscussionResponse
 import com.cultivitea.frontend.data.api.response.CommentResponse
 import com.cultivitea.frontend.data.api.response.DiscussionResponse
 import com.cultivitea.frontend.data.api.response.EditProfileResponse
@@ -76,4 +78,19 @@ interface ApiService {
     suspend fun getDiscussionsComments(
         @Path("id") id: String,
     ): CommentResponse
+    @FormUrlEncoded
+    @POST("discussions/{id}/comments")
+    suspend fun addDiscussionComments(
+        @Header("Cookie") token: String,
+        @Path("id") id: String,
+        @Field("content") content: String,
+    ): AddCommentResponse
+
+    @FormUrlEncoded
+    @POST("discussions")
+    suspend fun addDiscussion(
+        @Header("Cookie") token: String,
+        @Field("title") title: String,
+        @Field("content") content: String,
+    ): AddDiscussionResponse
 }

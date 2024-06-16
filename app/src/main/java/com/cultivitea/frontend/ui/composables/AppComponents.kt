@@ -31,6 +31,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Logout
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -92,25 +93,20 @@ fun ClickableAuthText(onNavigateToRegister: () -> Unit, hyperlink: Int, descript
 fun VideoCard(title: String, description: String, videoUrl: String, thumbnailRes: Int) {
     val context = LocalContext.current
 
-    val openYouTube = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { }
 
-    OutlinedCard(shape = RoundedCornerShape(4.dp), modifier= Modifier
-
-        .fillMaxWidth(), border = BorderStroke(1.dp, PrimaryBrown)) {
+    OutlinedCard(shape = RoundedCornerShape(4.dp), colors = CardDefaults.cardColors(containerColor = Color.White), modifier= Modifier
+        .fillMaxWidth().height(150.dp), border = BorderStroke(1.dp, PrimaryBrown)) {
         Row(modifier = Modifier.padding(12.dp)) {
-            Column {
+            Column (modifier = Modifier.weight(2f)){
                 Text(title, style = MaterialTheme.typography.titleMedium, color = PrimaryGreen, fontSize = 18.sp)
-                Text(description, style = MaterialTheme.typography.bodyMedium, color = GrayInput)
                 Spacer(modifier = Modifier.padding(10.dp))
                 Button(
                     onClick = {
                         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(videoUrl))
-                        // Check if YouTube app is installed
                         intent.setPackage("com.google.android.youtube")
                         if (intent.resolveActivity(context.packageManager) != null) {
                             startActivity(context, intent, null)
                         } else {
-                            // Open YouTube in browser if the app is not installed
                             intent.setPackage(null)
                             startActivity(context, intent, null)
                         }
@@ -122,12 +118,20 @@ fun VideoCard(title: String, description: String, videoUrl: String, thumbnailRes
                 }
             }
 
-//            Image(
-//                painter = painterResource(id = thumbnailRes),
-//                contentDescription = null,
-//                modifier = Modifier.size(120.dp),
-//                contentScale = ContentScale.Crop
-//            )
+            Spacer(modifier = Modifier.width(16.dp))
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+                    .align(Alignment.Top)
+            ) {
+                Image(
+                    painter = painterResource(id = thumbnailRes),
+                    contentDescription = null,
+                    modifier = Modifier.size(120.dp),
+                    contentScale = ContentScale.Crop
+                )
+            }
         }
     }
 }
@@ -163,18 +167,22 @@ fun CustomAppBar(
     screenTitle: String,
     onBackClick: () -> Unit = {},
     showLogout: Boolean = false,
-    onLogoutClick: () -> Unit = {}
+    onLogoutClick: () -> Unit = {},
+    showBack : Boolean = false
 ) {
     CenterAlignedTopAppBar(
         title = {
             Text(text = screenTitle)
         },
         navigationIcon = {
-            IconButton(onClick = onBackClick, colors = IconButtonDefaults.iconButtonColors(
-                contentColor = PrimaryGreen
-            )) {
-                Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+            if (showBack){
+                IconButton(onClick = onBackClick, colors = IconButtonDefaults.iconButtonColors(
+                    contentColor = PrimaryGreen
+                )) {
+                    Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                }
             }
+
         },
         actions = {
             if (showLogout) {
@@ -262,7 +270,8 @@ fun BottomNavigationBar(navController: NavController) {
 fun DiscussionCard(item: DiscussionItem,  onClick: () -> Unit){
     val timeAgo = getTimeAgo(item.createdAt!!)
     Card(shape = RoundedCornerShape(4.dp), border = BorderStroke(1.dp, PrimaryBrown), colors = CardDefaults.cardColors(containerColor = Color.White), modifier = Modifier
-            .fillMaxWidth().clickable { onClick() }){
+        .fillMaxWidth()
+        .clickable { onClick() }){
         Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 12.dp)){
             Row{
                 Text(text = item.creator!! + " - ", style = MaterialTheme.typography.labelSmall.copy(
@@ -300,7 +309,7 @@ fun CommentCard(item: CommentItem){
                 fontWeight = FontWeight.Normal
             ), )
             Spacer(modifier = Modifier.height(8.dp))
-            Text(item.content!!, style = MaterialTheme.typography.labelMedium.copy(color = Color.Black, fontSize = 10.sp, fontWeight = FontWeight.Light) )
+            Text(item.content!!, style = MaterialTheme.typography.labelMedium.copy(color = Color.Black, fontSize = 16.sp, fontWeight = FontWeight.Light, lineHeight = 18.sp) )
         }
 
     }

@@ -2,6 +2,7 @@ package com.cultivitea.frontend.ui.screens
 
 import android.net.Uri
 import android.util.Log
+import android.content.Context
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
@@ -16,9 +17,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,11 +29,9 @@ import com.cultivitea.frontend.ui.composables.ProfileImage
 import com.cultivitea.frontend.ui.theme.PrimaryBrown
 import com.cultivitea.frontend.ui.theme.PrimaryGreen
 import com.cultivitea.frontend.viewmodel.MainViewModel
-import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 
 @Composable
@@ -42,18 +41,18 @@ fun EditProfileScreen(navController: NavController, viewModel: MainViewModel) {
     var username by remember { mutableStateOf("") }
     var imageUrl by remember { mutableStateOf("") }
     var dateOfBirth by remember { mutableStateOf("") }
+    val context = LocalContext.current
+
     val galleryLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let {
-            imageUrl = it.toString()
+            imageUrl = getRealPathFromURI(context, it)
         }
     }
     var isLoading by remember { mutableStateOf(false) }
 
     Scaffold(
         containerColor = Color.White,
-        topBar = { CustomAppBar(screenTitle = "Edit Profile", onBackClick = {
-            navController.popBackStack()
-        }) },
+        topBar = { CustomAppBar(screenTitle = "Edit Profile", onBackClick = {navController.popBackStack()}, showBack = true) },
         content = { paddingValues ->
             Box(modifier = Modifier
                 .fillMaxSize()
@@ -210,6 +209,14 @@ fun EditProfileScreen(navController: NavController, viewModel: MainViewModel) {
                         )
                     }
                 }
+                if (isLoading) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
             }
         }
     )
@@ -225,6 +232,19 @@ fun EditProfileScreen(navController: NavController, viewModel: MainViewModel) {
     }
 }
 
+private fun getRealPathFromURI(context: Context, uri: Uri): String {
+    val contentResolver = context.contentResolver
+    val filePathColumn = arrayOf(android.provider.MediaStore.Images.Media.DATA)
+    val cursor = contentResolver.query(uri, filePathColumn, null, null, null)
+    cursor?.moveToFirst()
+    val columnIndex = cursor?.getColumnIndex(filePathColumn[0])
+    val picturePath = cursor?.getString(columnIndex ?: 0)
+    cursor?.close()
+    return picturePath ?: uri.toString()
+}
+
+
+
 private fun createImagePart(imageUrl: String): MultipartBody.Part? {
     return if (imageUrl.startsWith("https://storage.googleapis.com")) {
         null
@@ -234,3 +254,5 @@ private fun createImagePart(imageUrl: String): MultipartBody.Part? {
         MultipartBody.Part.createFormData("image", file.name, requestFile)
     }
 }
+
+

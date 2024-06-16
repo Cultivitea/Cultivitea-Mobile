@@ -3,6 +3,7 @@ package com.cultivitea.frontend.viewmodel
 import android.util.Log
 import androidx.lifecycle.*
 import com.cultivitea.frontend.data.api.pref.UserModel
+import com.cultivitea.frontend.data.api.response.AddDiscussionResponse
 import com.cultivitea.frontend.data.api.response.CommentItem
 import com.cultivitea.frontend.data.api.response.DiscussionItem
 import com.cultivitea.frontend.data.api.response.EditProfileResponse
@@ -241,6 +242,41 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
             }
         }
     }
+
+    fun addComment(discussionId: String, comment: String) {
+        viewModelScope.launch {
+            try {
+                val response = repository.addComment(discussionId, comment)
+                if (!response.error!!) {
+                    getComments(discussionId)
+                } else {
+                    Log.e("MainViewModel", "Error adding comment: ${response.message}")
+                }
+            } catch (e: HttpException) {
+                Log.e("MainViewModel", "HTTP error adding comment: ${e.message}", e)
+            } catch (e: IOException) {
+                Log.e("MainViewModel", "Network error adding comment: ${e.message}", e)
+            } catch (e: Exception) {
+                Log.e("MainViewModel", "Unexpected error adding comment: ${e.message}", e)
+            }
+        }
+    }
+
+    fun addDiscussion(title: String, content: String, onAddResult: (AddDiscussionResponse?) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val response = repository.addDiscussion(title, content)
+                onAddResult(response)
+            } catch (e: HttpException) {
+                Log.e("MainViewModel", "HTTP error adding comment: ${e.message}", e)
+            } catch (e: IOException) {
+                Log.e("MainViewModel", "Network error adding comment: ${e.message}", e)
+            } catch (e: Exception) {
+                Log.e("MainViewModel", "Unexpected error adding comment: ${e.message}", e)
+            }
+        }
+    }
+
 
     private fun parseSignUpHttpException(e: HttpException): SignUpResponse? {
         val errorBody = e.response()?.errorBody()?.string()

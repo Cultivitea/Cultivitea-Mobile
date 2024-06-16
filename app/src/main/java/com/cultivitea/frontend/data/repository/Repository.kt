@@ -3,6 +3,8 @@ package com.cultivitea.frontend.data.repository
 import com.cultivitea.frontend.data.api.pref.UserModel
 import com.cultivitea.frontend.data.api.pref.UserPreference
 import com.cultivitea.frontend.data.api.remote.ApiService
+import com.cultivitea.frontend.data.api.response.AddCommentResponse
+import com.cultivitea.frontend.data.api.response.AddDiscussionResponse
 import com.cultivitea.frontend.data.api.response.CommentResponse
 import com.cultivitea.frontend.data.api.response.DiscussionResponse
 import com.cultivitea.frontend.data.api.response.EditProfileResponse
@@ -79,6 +81,15 @@ class Repository private constructor(
         return apiService.getDiscussions()
     }
 
+    suspend fun addComment(id: String, comment: String) : AddCommentResponse {
+        val token = "access_token=" + userPreference.getSession().first().token
+        return apiService.addDiscussionComments(token, id, comment)
+    }
+
+    suspend fun addDiscussion(title: String, content: String) : AddDiscussionResponse {
+        val token = "access_token=" + userPreference.getSession().first().token
+        return apiService.addDiscussion(token, title, content)
+    }
     companion object {
         @Volatile
         private var instance: Repository? = null

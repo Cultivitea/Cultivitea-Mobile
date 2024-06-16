@@ -91,7 +91,7 @@ fun DetectorScreen(viewModel: MainViewModel) {
 
     Scaffold(
         containerColor = Color.White,
-        topBar = { CustomAppBar(screenTitle = "Tea Disease Detector") },
+//        topBar = { CustomAppBar(screenTitle = "Tea Disease Detector") },
         content = { paddingValues ->
             Box(modifier = Modifier
                 .fillMaxSize()
