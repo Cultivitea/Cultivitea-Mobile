@@ -45,198 +45,210 @@ fun LoginScreen(
     var emailError by rememberSaveable { mutableStateOf<String?>(null) }
     var passwordError by rememberSaveable { mutableStateOf<String?>(null) }
     var isLoading by rememberSaveable { mutableStateOf(false) }
-
-    Box(modifier = Modifier.fillMaxSize()) {
-        Column(
-            modifier = Modifier
-                .padding(horizontal = 22.dp)
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.logo),
-                contentDescription = stringResource(id = R.string.logo),
-                modifier = Modifier.size(200.dp).padding(top = 64.dp, bottom = 30.dp)
-            )
-
-            Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.Start) {
-                Column(modifier = Modifier.padding(vertical = 16.dp)) {
-                    Text(
-                        text = stringResource(id = R.string.login),
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-
-                    Spacer(modifier = Modifier.padding(4.dp))
-
-                    Text(
-                        text = stringResource(id = R.string.login_description),
-                        style = MaterialTheme.typography.titleSmall,
-                    )
-                }
-
-                Spacer(modifier = Modifier.padding(8.dp))
-
-                Text(
-                    text = stringResource(id = R.string.email),
-                    style = MaterialTheme.typography.labelSmall,
-                )
-
-                TextField(
-                    value = email,
-                    onValueChange = {
-                        email = it
-                        emailError = null
-                    },
-                    isError = emailError != null,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .border(1.dp, if (emailError != null) Color.Red else PrimaryBrown, RoundedCornerShape(20.dp)),
-                    shape = RoundedCornerShape(20.dp),
-                    colors = TextFieldDefaults.colors(
-                        errorContainerColor = Color.Transparent,
-                        errorIndicatorColor = Color.Transparent,
-                        focusedTextColor = Color.Black,
-                        unfocusedTextColor = Color.Black,
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                    ),
-                )
-                if (emailError != null) {
-                    Text(
-                        text = emailError ?: "",
-                        color = Color.Red,
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.padding(start = 16.dp)
-                    )
-                }
-
-                Spacer(modifier = Modifier.padding(8.dp))
-
-                Text(
-                    text = stringResource(id = R.string.password),
-                    style = MaterialTheme.typography.labelSmall,
-                )
-
-                TextField(
-                    value = password,
-                    onValueChange = {
-                        password = it
-                        passwordError = null
-                    },
-                    singleLine = true,
-                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                    trailingIcon = {
-                        val image = if (passwordVisible)
-                            Icons.Filled.Visibility
-                        else
-                            Icons.Filled.VisibilityOff
-
-                        val description = if (passwordVisible) "Hide password" else "Show password"
-
-                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                            Icon(imageVector = image, contentDescription = description)
-                        }
-                    },
-                    isError = passwordError != null,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .border(1.dp, if (passwordError != null) Color.Red else PrimaryBrown, RoundedCornerShape(20.dp)),
-                    shape = RoundedCornerShape(20.dp),
-                    colors = TextFieldDefaults.colors(
-                        errorContainerColor = Color.Transparent,
-                        errorIndicatorColor = Color.Transparent,
-                        focusedTextColor = Color.Black,
-                        unfocusedTextColor = Color.Black,
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                    ),
-                )
-                if (passwordError != null) {
-                    Text(
-                        text = passwordError ?: "",
-                        color = Color.Red,
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.padding(start = 16.dp)
-                    )
-                }
-            }
-
-            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(vertical = 25.dp)) {
-                Button(
-                    onClick = {
-                        isLoading = true
-                        viewModel.loginUser(email, password) { loginResponse, error ->
-                            isLoading = false
-                            if (loginResponse != null && !loginResponse.error!!) {
-                                val userCredential = loginResponse.userCredential
-                                if (userCredential != null) {
-                                    viewModel.getProfile(userCredential.token!!, userCredential.uid!!)
-                                    onLoginSuccess()
-                                }
-                            } else {
-                                loginError = loginResponse?.message ?: "Unknown error"
-                                loginResponse?.details?.let { det ->
-                                    emailError = det["email"]
-                                    passwordError = det["password"]
-                                }
-                                Log.d("LoginScreen", "Response: $loginResponse")
-                                Log.d("LoginScreen", "Error registering user: $emailError, $passwordError")
-                            }
-                        }
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen),
-                    shape = RoundedCornerShape(4.dp)
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.signin),
-                        modifier = Modifier.padding(horizontal = 40.dp, vertical = 4.dp),
-                        style = MaterialTheme.typography.labelMedium.copy(
-                            fontSize = 18.sp,
-                            color = Color.White,
-                            fontWeight = FontWeight.Normal
-                        )
-                    )
-                }
-
-                Spacer(modifier = Modifier.padding(8.dp))
-
-                ClickableAuthText(onNavigateToRegister, R.string.sign_up, R.string.dont_have_account)
-            }
-        }
-
-        if (loginError != null) {
-            AlertDialog(
-                onDismissRequest = { loginError = null },
-                confirmButton = {
-                    TextButton(onClick = { loginError = null }) {
-                        Text("OK")
-                    }
-                },
-                text = {
-                    Text(
-                        loginError ?: "",
-                        style = MaterialTheme.typography.labelMedium.copy(
-                            fontSize = 18.sp,
-                            color = Color.Black,
-                            fontWeight = FontWeight.Normal
-                        )
-                    )
-                }
-            )
-        }
-
-        if (isLoading) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.fillMaxSize()
+    Scaffold(containerColor = Color.White) { paddingValues ->
+        Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = 22.dp)
+                    .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                CircularProgressIndicator()
+                Image(
+                    painter = painterResource(id = R.drawable.logo),
+                    contentDescription = stringResource(id = R.string.logo),
+                    modifier = Modifier
+                        .size(200.dp)
+                        .padding(top = 64.dp, bottom = 30.dp)
+                )
+
+                Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.Start) {
+                    Column(modifier = Modifier.padding(vertical = 16.dp)) {
+                        Text(
+                            text = stringResource(id = R.string.login),
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+
+                        Spacer(modifier = Modifier.padding(4.dp))
+
+                        Text(
+                            text = stringResource(id = R.string.login_description),
+                            style = MaterialTheme.typography.titleSmall,
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.padding(8.dp))
+
+                    Text(
+                        text = stringResource(id = R.string.email),
+                        style = MaterialTheme.typography.labelSmall,
+                    )
+
+                    TextField(
+                        value = email,
+                        onValueChange = {
+                            email = it
+                            emailError = null
+                        },
+                        isError = emailError != null,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .border(
+                                1.dp,
+                                if (emailError != null) Color.Red else PrimaryBrown,
+                                RoundedCornerShape(20.dp)
+                            ),
+                        shape = RoundedCornerShape(20.dp),
+                        colors = TextFieldDefaults.colors(
+                            errorContainerColor = Color.Transparent,
+                            errorIndicatorColor = Color.Transparent,
+                            focusedTextColor = Color.Black,
+                            unfocusedTextColor = Color.Black,
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                        ),
+                    )
+                    if (emailError != null) {
+                        Text(
+                            text = emailError ?: "",
+                            color = Color.Red,
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.padding(start = 16.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.padding(8.dp))
+
+                    Text(
+                        text = stringResource(id = R.string.password),
+                        style = MaterialTheme.typography.labelSmall,
+                    )
+
+                    TextField(
+                        value = password,
+                        onValueChange = {
+                            password = it
+                            passwordError = null
+                        },
+                        singleLine = true,
+                        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                        trailingIcon = {
+                            val image = if (passwordVisible)
+                                Icons.Filled.Visibility
+                            else
+                                Icons.Filled.VisibilityOff
+
+                            val description = if (passwordVisible) "Hide password" else "Show password"
+
+                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                Icon(imageVector = image, contentDescription = description)
+                            }
+                        },
+                        isError = passwordError != null,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .border(
+                                1.dp,
+                                if (passwordError != null) Color.Red else PrimaryBrown,
+                                RoundedCornerShape(20.dp)
+                            ),
+                        shape = RoundedCornerShape(20.dp),
+                        colors = TextFieldDefaults.colors(
+                            errorContainerColor = Color.Transparent,
+                            errorIndicatorColor = Color.Transparent,
+                            focusedTextColor = Color.Black,
+                            unfocusedTextColor = Color.Black,
+                            focusedContainerColor = Color.Transparent,
+                            unfocusedContainerColor = Color.Transparent,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                        ),
+                    )
+                    if (passwordError != null) {
+                        Text(
+                            text = passwordError ?: "",
+                            color = Color.Red,
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.padding(start = 16.dp)
+                        )
+                    }
+                }
+
+                Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(vertical = 25.dp)) {
+                    Button(
+                        onClick = {
+                            isLoading = true
+                            viewModel.loginUser(email, password) { loginResponse, error ->
+                                isLoading = false
+                                if (loginResponse != null && !loginResponse.error!!) {
+                                    val userCredential = loginResponse.userCredential
+                                    if (userCredential != null) {
+                                        viewModel.getProfile(userCredential.token!!, userCredential.uid!!)
+                                        onLoginSuccess()
+                                    }
+                                } else {
+                                    loginError = loginResponse?.message ?: "Unknown error"
+                                    loginResponse?.details?.let { det ->
+                                        emailError = det["email"]
+                                        passwordError = det["password"]
+                                    }
+                                    Log.d("LoginScreen", "Response: $loginResponse")
+                                    Log.d("LoginScreen", "Error registering user: $emailError, $passwordError")
+                                }
+                            }
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen),
+                        shape = RoundedCornerShape(4.dp)
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.signin),
+                            modifier = Modifier.padding(horizontal = 40.dp, vertical = 4.dp),
+                            style = MaterialTheme.typography.labelMedium.copy(
+                                fontSize = 18.sp,
+                                color = Color.White,
+                                fontWeight = FontWeight.Normal
+                            )
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.padding(8.dp))
+
+                    ClickableAuthText(onNavigateToRegister, R.string.sign_up, R.string.dont_have_account)
+                }
+            }
+
+            if (loginError != null) {
+                AlertDialog(
+                    onDismissRequest = { loginError = null },
+                    confirmButton = {
+                        TextButton(onClick = { loginError = null }) {
+                            Text("OK")
+                        }
+                    },
+                    text = {
+                        Text(
+                            loginError ?: "",
+                            style = MaterialTheme.typography.labelMedium.copy(
+                                fontSize = 18.sp,
+                                color = Color.Black,
+                                fontWeight = FontWeight.Normal
+                            )
+                        )
+                    }
+                )
+            }
+
+            if (isLoading) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    CircularProgressIndicator()
+                }
             }
         }
     }
+
 }
