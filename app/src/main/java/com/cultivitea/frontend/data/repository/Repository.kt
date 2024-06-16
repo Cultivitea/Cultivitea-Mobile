@@ -3,12 +3,17 @@ package com.cultivitea.frontend.data.repository
 import com.cultivitea.frontend.data.api.pref.UserModel
 import com.cultivitea.frontend.data.api.pref.UserPreference
 import com.cultivitea.frontend.data.api.remote.ApiService
+import com.cultivitea.frontend.data.api.response.EditProfileResponse
 import com.cultivitea.frontend.data.api.response.PredictionResponse
 import com.cultivitea.frontend.data.api.response.LoginResponse
 import com.cultivitea.frontend.data.api.response.SignUpResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+
 
 class Repository private constructor(
     private val apiService: ApiService,
@@ -32,9 +37,24 @@ class Repository private constructor(
         return apiService.getProfile(accessToken, id)
     }
 
-    suspend fun logout() {
-        userPreference.logout()
+    suspend fun editProfile(
+        token: String,
+        id: String,
+        name: String,
+        phoneNumber: String,
+        dateOfBirth: String,
+        image: MultipartBody.Part?
+    ): EditProfileResponse {
+        val accessToken = "access_token=" + token
+        if (image == null) {
+            return apiService.editProfileWithoutImage(accessToken, id, name, phoneNumber, dateOfBirth)
+        }
+        val nameRequestBody = name.toRequestBody("text/plain".toMediaTypeOrNull())
+        val phoneNumberRequestBody = phoneNumber.toRequestBody("text/plain".toMediaTypeOrNull())
+        val dateOfBirthRequestBody = dateOfBirth.toRequestBody("text/plain".toMediaTypeOrNull())
+        return apiService.editProfile(accessToken, id, image, nameRequestBody, phoneNumberRequestBody, dateOfBirthRequestBody)
     }
+
 
     suspend fun predict(file: MultipartBody.Part): PredictionResponse {
         val token = "access_token=" + userPreference.getSession().first().token
@@ -45,6 +65,9 @@ class Repository private constructor(
         return apiService.registerUser(name, email, password)
     }
 
+    suspend fun logout() {
+        userPreference.logout()
+    }
 
     companion object {
         @Volatile

@@ -127,7 +127,6 @@ fun DetectorScreen(viewModel: MainViewModel) {
                     Spacer(modifier = Modifier.height(16.dp))
                     val color = if (imageUri == null) PrimaryGreen else Color.Red
 
-                    // Button to take a photo using the camera
                     OutlinedButton(
                         onClick = {
                             if (imageUri == null) {

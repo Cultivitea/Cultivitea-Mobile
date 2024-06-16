@@ -3,6 +3,8 @@ package com.cultivitea.frontend.ui.screens
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,15 +12,23 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,9 +39,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.navigation.NavController
 import com.cultivitea.frontend.helper.uploadImage
 import com.cultivitea.frontend.ui.composables.CustomAppBar
 import com.cultivitea.frontend.ui.composables.ProfileImage
@@ -41,16 +53,34 @@ import com.cultivitea.frontend.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun ProfileScreen(viewModel: MainViewModel) {
-    var phoneNumber by remember { mutableStateOf<String?>(null) }
-    var email by remember { mutableStateOf<String?>(null) }
-    var username by remember { mutableStateOf<String?>(null) }
-    var imageUrl by remember { mutableStateOf<String?>(null) }
-    var dateOfBirth by remember { mutableStateOf<String?>(null) }
+fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
+//    var phoneNumber by remember { mutableStateOf<String?>(null) }
+//    var email by remember { mutableStateOf<String?>(null) }
+//    var username by remember { mutableStateOf<String?>(null) }
+//    var imageUrl by remember { mutableStateOf<String?>(null) }
+//    var dateOfBirth by remember { mutableStateOf<String?>(null) }
+    var phoneNumber by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("") }
+    var imageUrl by remember { mutableStateOf("") }
+    var dateOfBirth by remember { mutableStateOf("") }
 
     Scaffold(
         containerColor = Color.White,
-        topBar = { CustomAppBar(screenTitle = "Profile") },
+        topBar = {
+            CustomAppBar(
+                screenTitle = "Profile",
+                showLogout = true,
+                onLogoutClick = {
+                    viewModel.logout()
+//                    navController.navigate("login") {
+//                        popUpTo("login") {
+//                            inclusive = true
+//                        }
+//                    }
+                }
+            )
+        },
         content = { paddingValues ->
             Box(modifier = Modifier
                 .fillMaxSize()
@@ -67,25 +97,97 @@ fun ProfileScreen(viewModel: MainViewModel) {
                             .height(400.dp)
                             .padding(16.dp)
                     ) {
-                        ProfileImage(imageUrl = imageUrl)
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+                            ProfileImage(imageUrl = imageUrl)
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Button(
+                                onClick = {
+                                    navController.navigate("editProfile")
+                                },
+                                shape = RoundedCornerShape(4.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen),
+                                border = BorderStroke(1.dp, PrimaryGreen)
+                            ) {
+                                Text(
+                                    text = "Edit Profile",
+                                    style = MaterialTheme.typography.labelMedium.copy(
+                                        fontSize = 18.sp,
+                                        fontWeight = FontWeight.Normal,
+                                        color = Color.White
+                                    ),
+                                )
+                            }
+                        }
+
                     }
-                    Text(
-                        text = "Username: $username",
-                        style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp, fontWeight = FontWeight.Bold)
-                    )
-                    Text(
-                        text = "Email: $email",
-                        style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp, fontWeight = FontWeight.Bold)
-                    )
-                    Text(
-                        text = "Phone: $phoneNumber",
-                        style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp, fontWeight = FontWeight.Bold)
-                    )
-                    Text(
-                        text = "Date of Birth: $dateOfBirth",
-                        style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp, fontWeight = FontWeight.Bold)
-                    )
+                    Column(Modifier.fillMaxWidth().padding(16.dp)) {
+                        TextField(
+                            value = username,
+                            onValueChange = { username = it },
+                            label = { Text("Username", color = PrimaryGreen) },
+                            modifier = Modifier.fillMaxWidth(),
+                            enabled = false,
+                            colors = TextFieldDefaults.colors(
+                                disabledContainerColor = Color.Transparent,
+                                disabledIndicatorColor = Color.Transparent,
+                                disabledTextColor = Color.Black,
+                                disabledLabelColor = Color.Black,
+
+                                )
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        TextField(
+                            value = email,
+                            onValueChange = { email = it},
+                            label = { Text("Email", color = PrimaryGreen) },
+                            modifier = Modifier.fillMaxWidth(),
+                            enabled = false,
+                            colors = TextFieldDefaults.colors(
+                                disabledContainerColor = Color.Transparent,
+                                disabledIndicatorColor = Color.Transparent,
+                                disabledTextColor = Color.Black,
+                                disabledLabelColor = Color.Black,
+                            )
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        TextField(
+                            value = phoneNumber,
+                            onValueChange = {
+                                val numericRegex = "[0-9]*".toRegex()
+                                if (it.matches(numericRegex)) {
+                                    phoneNumber = it
+                                }
+                            },
+                            label = { Text("Phone Number", color = PrimaryGreen) },
+                            modifier = Modifier.fillMaxWidth(),
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                keyboardType = KeyboardType.Number
+                            ),
+                            enabled = false,
+                            colors = TextFieldDefaults.colors(
+                                disabledContainerColor = Color.Transparent,
+                                disabledIndicatorColor = Color.Transparent,
+                                disabledTextColor = Color.Black,
+                                disabledLabelColor = Color.Black,
+                            )
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        TextField(
+                            value = dateOfBirth,
+                            onValueChange = { dateOfBirth = it
+                            },
+                            label = { Text("Date of Birth (dd/mm/yyyy)", color = PrimaryGreen) },
+                            modifier = Modifier.fillMaxWidth(),
+                            enabled = false,
+                            colors = TextFieldDefaults.colors(
+                                disabledContainerColor = Color.Transparent,
+                                disabledIndicatorColor = Color.Transparent,
+                                disabledTextColor = Color.Black,
+                                disabledLabelColor = Color.Black,
+                            )
+                        )
+                    }
+
                 }
 
 
@@ -93,10 +195,6 @@ fun ProfileScreen(viewModel: MainViewModel) {
         }
     )
     viewModel.getSession().observe(LocalLifecycleOwner.current) { user ->
-//        if (!user.isLogin) {
-//            startActivity(Intent(this, WelcomeActivity::class.java))
-//            finish()
-//        }
         Log.d("ProfileGet", "Response: $user")
         phoneNumber = user.phoneNumber
         email = user.email

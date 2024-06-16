@@ -3,13 +3,17 @@ package com.cultivitea.frontend.viewmodel
 import android.util.Log
 import androidx.lifecycle.*
 import com.cultivitea.frontend.data.api.pref.UserModel
+import com.cultivitea.frontend.data.api.response.EditProfileResponse
 import com.cultivitea.frontend.data.api.response.PredictionResponse
 import com.cultivitea.frontend.data.api.response.LoginResponse
 import com.cultivitea.frontend.data.api.response.SignUpResponse
 import com.cultivitea.frontend.data.repository.Repository
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONException
 import org.json.JSONObject
 import retrofit2.HttpException
@@ -20,6 +24,20 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
     private val _uploadResult = MutableLiveData<PredictionResponse>()
     val uploadResult: LiveData<PredictionResponse> = _uploadResult
 
+//    private val _editProfileResult = MutableLiveData<EditProfileResponse?>()
+//    val editProfileResult: LiveData<EditProfileResponse?> = _editProfileResult
+
+    private var token = ""
+    private var id = ""
+
+    init {
+        viewModelScope.launch {
+            repository.getSession().collect { user ->
+                token = user.token
+                id = user.uid
+            }
+        }
+    }
 
     fun predict(file: MultipartBody.Part) {
         viewModelScope.launch {
@@ -36,6 +54,30 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
                 } else {
                     _uploadResult.postValue(PredictionResponse(error = true, message = e.message(), null))
                 }
+            }
+        }
+    }
+
+    fun editProfile(
+        name: String,
+        phoneNumber: String,
+        dateOfBirth: String,
+        image: MultipartBody.Part?,
+        onEditResult: (EditProfileResponse?, String?) -> Unit
+    ) {
+
+        viewModelScope.launch {
+            try {
+                val editResponse = repository.editProfile(token, id, name, phoneNumber, dateOfBirth, image)
+//                _editProfileResult.postValue(editResponse)
+                onEditResult(editResponse, null)
+            } catch (e: HttpException) {
+                val errorMessage = parseHttpException(e)
+                onEditResult(null, errorMessage)
+            } catch (e: IOException) {
+                onEditResult(null, "Network error: ${e.message}")
+            } catch (e: Exception) {
+                onEditResult(null, "Unexpected error: ${e.message}")
             }
         }
     }
@@ -72,13 +114,25 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
 
     fun saveSession(user: UserModel) {
         viewModelScope.launch {
-            repository.saveSession(user)
+            try{
+                repository.saveSession(user)
+            } finally {
+                token = user.token
+                id = user.uid
+            }
         }
     }
 
     fun getSession(): LiveData<UserModel> {
+        Log.d("MainViewModel", "Token: $token, ID: $id")
+        Log.d("MainViewModel", "Getting session...")
+        if (token.isNotEmpty() && id.isNotEmpty()){
+            getProfile(token, id)
+        }
+        Log.d("MainViewModel", "Session result: ${repository.getSession().asLiveData()}")
         return repository.getSession().asLiveData()
     }
+
 
      fun getProfile(token: String, id: String)  {
         viewModelScope.launch {
@@ -105,6 +159,19 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
             }
         }
     }
+
+    fun logout() {
+        viewModelScope.launch {
+            repository.logout()
+            clearUserData()
+        }
+    }
+
+    private fun clearUserData() {
+        token = ""
+        id = ""
+    }
+
 
     fun registerUser(username: String, email: String, password: String, onRegisterResult: (SignUpResponse?, String?) -> Unit) {
         viewModelScope.launch {
@@ -165,4 +232,18 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
             null
         }
     }
+
+//    private fun parseEditProfileException(e: HttpException): EditProfileResponse? {
+//        val errorBody = e.response()?.errorBody()?.string()
+//        return if (errorBody != null) {
+//            try {
+//                Gson().fromJson(errorBody, EditProfileResponse::class.java)
+//            } catch (jsonException: JSONException) {
+//                null
+//            }
+//        } else {
+//            null
+//        }
+//    }
+
 }

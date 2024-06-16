@@ -30,6 +30,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -142,25 +143,39 @@ fun VideoCardPreview(){
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CustomAppBar(screenTitle: String, onBackClick: () -> Unit = {}) {
+fun CustomAppBar(
+    screenTitle: String,
+    onBackClick: () -> Unit = {},
+    showLogout: Boolean = false,
+    onLogoutClick: () -> Unit = {}
+) {
     CenterAlignedTopAppBar(
         title = {
-            Text(text = screenTitle, )
+            Text(text = screenTitle)
         },
         navigationIcon = {
             IconButton(onClick = onBackClick, colors = IconButtonDefaults.iconButtonColors(
                 contentColor = PrimaryGreen
-            ) ) {
-                Icon(Icons.Filled.ArrowBack, contentDescription = "Back", )
-
+            )) {
+                Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+            }
+        },
+        actions = {
+            if (showLogout) {
+                IconButton(onClick = onLogoutClick, colors = IconButtonDefaults.iconButtonColors(
+                    contentColor = PrimaryGreen
+                )) {
+                    Icon(Icons.Filled.Logout, contentDescription = "Logout")
+                }
             }
         },
         colors = TopAppBarDefaults.smallTopAppBarColors(
             containerColor = Color.White,
             titleContentColor = PrimaryGreen,
-        ),
+        )
     )
 }
+
 
 @Composable
 fun ProfileImage(imageUrl: String?) {
@@ -170,7 +185,7 @@ fun ProfileImage(imageUrl: String?) {
             contentDescription = null,
             tint = Color.Gray,
             modifier = Modifier
-                .size(128.dp)
+                .size(300.dp)
                 .clip(CircleShape)
                 .border(2.dp, PrimaryGreen, CircleShape)
         )
@@ -180,7 +195,7 @@ fun ProfileImage(imageUrl: String?) {
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .size(128.dp)
+                .size(300.dp)
                 .clip(CircleShape)
                 .border(2.dp, PrimaryGreen, CircleShape)
         )
