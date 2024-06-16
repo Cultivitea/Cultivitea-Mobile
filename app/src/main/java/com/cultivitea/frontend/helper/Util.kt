@@ -2,9 +2,16 @@ package com.cultivitea.frontend.helper
 
 import android.annotation.SuppressLint
 import android.content.ContentResolver
+import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
 import android.provider.OpenableColumns
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.core.content.ContextCompat
 import com.cultivitea.frontend.viewmodel.MainViewModel
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -17,6 +24,8 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 fun getFileFromUri(context: Context, uri: Uri): File? {
     val contentResolver = context.contentResolver
@@ -95,4 +104,64 @@ fun getTimeAgo(createdAt: String): String {
 
 fun pluralize(value: Long, unit: String): String {
     return if (value == 1L) "$value $unit" else "$value ${unit}s"
+}
+
+fun getRealPathFromURI(context: Context, uri: Uri): String {
+    val contentResolver = context.contentResolver
+    val filePathColumn = arrayOf(android.provider.MediaStore.Images.Media.DATA)
+    val cursor = contentResolver.query(uri, filePathColumn, null, null, null)
+    cursor?.moveToFirst()
+    val columnIndex = cursor?.getColumnIndex(filePathColumn[0])
+    val picturePath = cursor?.getString(columnIndex ?: 0)
+    cursor?.close()
+    return picturePath ?: uri.toString()
+}
+
+fun createImagePart(imageUrl: String): MultipartBody.Part? {
+    return if (imageUrl.startsWith("https://storage.googleapis.com")) {
+        null
+    } else {
+        val file = File(imageUrl)
+        val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
+        MultipartBody.Part.createFormData("image", file.name, requestFile)
+    }
+}
+
+suspend fun Context.getCameraProvider(): ProcessCameraProvider =
+    suspendCoroutine { continuation ->
+        ProcessCameraProvider.getInstance(this).also { cameraProvider ->
+            cameraProvider.addListener({
+                continuation.resume(cameraProvider.get())
+            }, ContextCompat.getMainExecutor(this))
+        }
+    }
+
+fun captureImage(imageCapture: ImageCapture, context: Context, onImageCaptured: (Uri) -> Unit) {
+    val name = "Cultivitea_${System.currentTimeMillis()}.jpeg"
+    val contentValues = ContentValues().apply {
+        put(MediaStore.MediaColumns.DISPLAY_NAME, name)
+        put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+            put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/CameraX-Image")
+        }
+    }
+    val outputOptions = ImageCapture.OutputFileOptions
+        .Builder(
+            context.contentResolver,
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+            contentValues
+        )
+        .build()
+    imageCapture.takePicture(
+        outputOptions,
+        ContextCompat.getMainExecutor(context),
+        object : ImageCapture.OnImageSavedCallback {
+            override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+                outputFileResults.savedUri?.let { onImageCaptured(it) }
+            }
+
+            override fun onError(exception: ImageCaptureException) {
+                println("Failed $exception")
+            }
+        })
 }

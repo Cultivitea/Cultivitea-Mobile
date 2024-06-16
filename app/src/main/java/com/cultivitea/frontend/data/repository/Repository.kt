@@ -15,15 +15,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-
 
 class Repository private constructor(
     private val apiService: ApiService,
     private val userPreference: UserPreference
 ) {
-
     suspend fun loginUser(email: String, password: String): LoginResponse {
         return apiService.loginUser(email, password)
     }

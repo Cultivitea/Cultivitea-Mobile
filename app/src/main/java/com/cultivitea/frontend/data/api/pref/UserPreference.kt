@@ -33,12 +33,6 @@ class UserPreference private constructor(private val dataStore: DataStore<Prefer
 
     fun getSession(): Flow<UserModel> {
         return dataStore.data.map { preferences ->
-//            UserModel(
-//                preferences[EMAIL_KEY] ?: "",
-//                preferences[TOKEN_KEY] ?: "",
-//
-//                preferences[IS_LOGIN_KEY] ?: false
-//            )
             UserModel(
                 preferences[TOKEN_KEY] ?: "",
                 preferences[UID_KEY] ?: "",

@@ -13,10 +13,7 @@ import com.cultivitea.frontend.data.api.response.SignUpResponse
 import com.cultivitea.frontend.data.repository.Repository
 import com.google.gson.Gson
 import kotlinx.coroutines.launch
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONException
 import org.json.JSONObject
 import retrofit2.HttpException
@@ -32,11 +29,6 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
 
     private val _comments = MutableLiveData<List<CommentItem>>()
     val comments: LiveData<List<CommentItem>> = _comments
-
-
-
-//    private val _editProfileResult = MutableLiveData<EditProfileResponse?>()
-//    val editProfileResult: LiveData<EditProfileResponse?> = _editProfileResult
 
     private var token = ""
     private var id = ""
@@ -316,18 +308,4 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
             null
         }
     }
-
-//    private fun parseEditProfileException(e: HttpException): EditProfileResponse? {
-//        val errorBody = e.response()?.errorBody()?.string()
-//        return if (errorBody != null) {
-//            try {
-//                Gson().fromJson(errorBody, EditProfileResponse::class.java)
-//            } catch (jsonException: JSONException) {
-//                null
-//            }
-//        } else {
-//            null
-//        }
-//    }
-
 }

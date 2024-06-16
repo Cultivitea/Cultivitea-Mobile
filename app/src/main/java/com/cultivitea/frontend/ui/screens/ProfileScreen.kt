@@ -2,8 +2,6 @@ package com.cultivitea.frontend.ui.screens
 
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,19 +10,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -42,23 +34,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
-import com.cultivitea.frontend.helper.uploadImage
 import com.cultivitea.frontend.ui.composables.CustomAppBar
 import com.cultivitea.frontend.ui.composables.ProfileImage
-import com.cultivitea.frontend.ui.theme.PrimaryBrown
 import com.cultivitea.frontend.ui.theme.PrimaryGreen
 import com.cultivitea.frontend.viewmodel.MainViewModel
-import kotlinx.coroutines.launch
 
 @Composable
 fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
-//    var phoneNumber by remember { mutableStateOf<String?>(null) }
-//    var email by remember { mutableStateOf<String?>(null) }
-//    var username by remember { mutableStateOf<String?>(null) }
-//    var imageUrl by remember { mutableStateOf<String?>(null) }
-//    var dateOfBirth by remember { mutableStateOf<String?>(null) }
     var phoneNumber by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
@@ -73,11 +56,6 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
                 showLogout = true,
                 onLogoutClick = {
                     viewModel.logout()
-//                    navController.navigate("login") {
-//                        popUpTo("login") {
-//                            inclusive = true
-//                        }
-//                    }
                 }
             )
         },
@@ -189,8 +167,6 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
                     }
 
                 }
-
-
             }
         }
     )
@@ -203,5 +179,4 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
         dateOfBirth = user.dateOfBirth
 
     }
-
 }

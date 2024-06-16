@@ -7,8 +7,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.core.content.ContextCompat
 import com.cultivitea.frontend.viewmodel.MainViewModel
 import com.cultivitea.frontend.viewmodel.ViewModelFactory

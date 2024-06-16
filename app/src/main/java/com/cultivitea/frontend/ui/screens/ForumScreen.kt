@@ -15,7 +15,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddToPhotos
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -25,26 +24,20 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.cultivitea.frontend.R
 import com.cultivitea.frontend.data.api.response.DiscussionItem
-import com.cultivitea.frontend.ui.composables.CustomAppBar
 import com.cultivitea.frontend.ui.composables.DiscussionCard
 import com.cultivitea.frontend.ui.composables.VideoCard
 import com.cultivitea.frontend.ui.theme.NavBrown
-import com.cultivitea.frontend.ui.theme.PrimaryBrown
 import com.cultivitea.frontend.ui.theme.PrimaryGreen
 import com.cultivitea.frontend.viewmodel.MainViewModel
 import com.google.gson.Gson
@@ -105,22 +98,12 @@ fun ForumScreen(navController: NavController, viewModel: MainViewModel) {
                         Button(
                             onClick = { navController.navigate("addDiscussion") },
                             shape = RoundedCornerShape(4.dp),
-//                            modifier = Modifier
-//                                .padding(horizontal = 20.dp, vertical = 10.dp),
                             colors = ButtonDefaults.outlinedButtonColors(
                                 containerColor = Color.White,
                                 contentColor = PrimaryGreen
                             ),
                             border = BorderStroke(1.dp, PrimaryGreen)
                         ) {
-//                            Text(
-//                                text = "Add Discussion",
-//                                style = MaterialTheme.typography.labelMedium.copy(
-//                                    fontSize = 18.sp,
-//                                    color = PrimaryGreen,
-//                                    fontWeight = FontWeight.Normal
-//                                ),
-//                            )
                             Icon(Icons.Filled.AddToPhotos, contentDescription = "Back")
 
                         }
@@ -146,8 +129,3 @@ fun ForumScreen(navController: NavController, viewModel: MainViewModel) {
         discussions = item
     }
 }
-//@Composable
-//@Preview
-//fun ForumScreenPreview() {
-//    ForumScreen()
-//}

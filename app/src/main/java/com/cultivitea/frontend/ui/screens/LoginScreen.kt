@@ -26,7 +26,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cultivitea.frontend.R
-import com.cultivitea.frontend.data.api.pref.UserModel
 import com.cultivitea.frontend.ui.composables.ClickableAuthText
 import com.cultivitea.frontend.ui.theme.PrimaryBrown
 import com.cultivitea.frontend.ui.theme.PrimaryGreen

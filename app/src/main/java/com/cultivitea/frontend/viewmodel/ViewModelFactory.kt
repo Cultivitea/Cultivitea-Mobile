@@ -4,7 +4,7 @@ import com.cultivitea.frontend.data.repository.Repository
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.dicoding.picodiploma.loginwithanimation.di.Injection
+import com.cultivitea.frontend.di.Injection
 
 class ViewModelFactory(private val repository: Repository) : ViewModelProvider.NewInstanceFactory() {
 

@@ -1,4 +1,4 @@
-package com.dicoding.picodiploma.loginwithanimation.di
+package com.cultivitea.frontend.di
 
 import android.content.Context
 import com.cultivitea.frontend.data.api.pref.UserPreference

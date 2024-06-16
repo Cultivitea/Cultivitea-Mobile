@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -154,7 +153,6 @@ fun DiscussionDetailScreen(navController: NavController, discussionItem: Discuss
             }
         }
     )
-
     viewModel.comments.observe(LocalLifecycleOwner.current) { item ->
         Log.d("ProfileGet", "Response: $item")
         comments = item

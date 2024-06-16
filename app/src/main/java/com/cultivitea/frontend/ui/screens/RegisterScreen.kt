@@ -50,6 +50,7 @@ import com.cultivitea.frontend.ui.composables.ClickableAuthText
 import com.cultivitea.frontend.ui.theme.PrimaryBrown
 import com.cultivitea.frontend.ui.theme.PrimaryGreen
 import com.cultivitea.frontend.viewmodel.MainViewModel
+
 @Composable
 fun RegisterScreen(onNavigateToLogin: () -> Unit, viewModel: MainViewModel) {
     var username by rememberSaveable { mutableStateOf("") }
@@ -61,6 +62,7 @@ fun RegisterScreen(onNavigateToLogin: () -> Unit, viewModel: MainViewModel) {
     var usernameError by rememberSaveable { mutableStateOf<String?>(null) }
     var emailError by rememberSaveable { mutableStateOf<String?>(null) }
     var passwordError by rememberSaveable { mutableStateOf<String?>(null) }
+
     Scaffold (containerColor = Color.White){ paddingValues ->
         Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
             Column(
@@ -76,7 +78,6 @@ fun RegisterScreen(onNavigateToLogin: () -> Unit, viewModel: MainViewModel) {
                         .requiredSize(200.dp)
                         .padding(top = 64.dp, bottom = 30.dp)
                 )
-
                 Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.Start) {
                     Column(modifier = Modifier.padding(vertical = 16.dp)) {
                         Text(
@@ -91,12 +92,10 @@ fun RegisterScreen(onNavigateToLogin: () -> Unit, viewModel: MainViewModel) {
                             style = MaterialTheme.typography.titleSmall,
                         )
                     }
-
                     Text(
                         text = stringResource(id = R.string.username),
                         style = MaterialTheme.typography.labelSmall,
                     )
-
                     TextField(
                         value = username,
                         onValueChange = {
@@ -131,14 +130,11 @@ fun RegisterScreen(onNavigateToLogin: () -> Unit, viewModel: MainViewModel) {
                             modifier = Modifier.padding(start = 16.dp)
                         )
                     }
-
                     Spacer(modifier = Modifier.padding(8.dp))
-
                     Text(
                         text = stringResource(id = R.string.email),
                         style = MaterialTheme.typography.labelSmall,
                     )
-
                     TextField(
                         value = email,
                         onValueChange = {
@@ -173,14 +169,11 @@ fun RegisterScreen(onNavigateToLogin: () -> Unit, viewModel: MainViewModel) {
                             modifier = Modifier.padding(start = 16.dp)
                         )
                     }
-
                     Spacer(modifier = Modifier.padding(8.dp))
-
                     Text(
                         text = stringResource(id = R.string.password),
                         style = MaterialTheme.typography.labelSmall,
                     )
-
                     TextField(
                         value = password,
                         onValueChange = {
@@ -231,7 +224,6 @@ fun RegisterScreen(onNavigateToLogin: () -> Unit, viewModel: MainViewModel) {
                         )
                     }
                 }
-
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Button(
                         onClick = {
@@ -271,7 +263,6 @@ fun RegisterScreen(onNavigateToLogin: () -> Unit, viewModel: MainViewModel) {
                     ClickableAuthText(onNavigateToLogin, R.string.signin, R.string.already_have_account)
                 }
             }
-
             if (registerError != null && !registerError.equals("Unknown error")) {
                 AlertDialog(
                     onDismissRequest = { registerError = null },
@@ -293,7 +284,6 @@ fun RegisterScreen(onNavigateToLogin: () -> Unit, viewModel: MainViewModel) {
                 )
 
             }
-
             if (isLoading) {
                 Box(
                     contentAlignment = Alignment.Center,
@@ -304,7 +294,6 @@ fun RegisterScreen(onNavigateToLogin: () -> Unit, viewModel: MainViewModel) {
             }
         }
     }
-
 }
 
 

@@ -17,13 +17,10 @@ val provider = GoogleFont.Provider(
 )
 
 val inter = GoogleFont("Inter")
-val epilogue = GoogleFont("Epilogue")
-
 val fontFamilyInter = FontFamily(
     Font(googleFont = inter, fontProvider = provider)
 )
 val fontFamilyEpilogue = FontFamily(
-//    Font(googleFont = epilogue, fontProvider = provider)
     androidx.compose.ui.text.font.Font(R.font.epilogue_black, FontWeight.Black),
     androidx.compose.ui.text.font.Font(R.font.epilogue_bold, FontWeight.Bold),
     androidx.compose.ui.text.font.Font(R.font.epilogue_light, FontWeight.Light),
@@ -34,7 +31,6 @@ val fontFamilyEpilogue = FontFamily(
 
 )
 
-// Set of Material typography styles to start with
 val Typography = Typography(
     //Field Labels
     labelSmall = TextStyle(
@@ -100,21 +96,4 @@ val Typography = Typography(
         letterSpacing = 0.5.sp,
         color = GrayInput
     ),
-
-    /* Other default text styles to override
-    titleLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 22.sp,
-        lineHeight = 28.sp,
-        letterSpacing = 0.sp
-    ),
-    labelSmall = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Medium,
-        fontSize = 11.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
-    )
-    */
 )

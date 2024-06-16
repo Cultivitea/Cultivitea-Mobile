@@ -1,18 +1,13 @@
 package com.cultivitea.frontend.ui.screens
 
-import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
-import android.os.Build
-import android.provider.MediaStore
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
-import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.Preview
-import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -34,19 +29,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.request.SuccessResult
+import com.cultivitea.frontend.helper.captureImage
+import com.cultivitea.frontend.helper.getCameraProvider
 import com.cultivitea.frontend.helper.uploadImage
-import com.cultivitea.frontend.ui.composables.CustomAppBar
 import com.cultivitea.frontend.ui.theme.PrimaryBrown
 import com.cultivitea.frontend.ui.theme.PrimaryGreen
 import com.cultivitea.frontend.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 @Composable
 fun DetectorScreen(viewModel: MainViewModel) {
@@ -91,7 +84,6 @@ fun DetectorScreen(viewModel: MainViewModel) {
 
     Scaffold(
         containerColor = Color.White,
-//        topBar = { CustomAppBar(screenTitle = "Tea Disease Detector") },
         content = { paddingValues ->
             Box(modifier = Modifier
                 .fillMaxSize()
@@ -164,8 +156,6 @@ fun DetectorScreen(viewModel: MainViewModel) {
                             ),
                         )
                     }
-
-                    // Button to pick an image from the gallery
                     OutlinedButton(
                         onClick = {
                             galleryLauncher.launch("image/*")
@@ -190,7 +180,6 @@ fun DetectorScreen(viewModel: MainViewModel) {
                             ),
                         )
                     }
-
                     Spacer(modifier = Modifier.height(16.dp))
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -237,7 +226,6 @@ fun DetectorScreen(viewModel: MainViewModel) {
                         }
                     }
                 }
-
                 if (isLoading) {
                     Box(
                         contentAlignment = Alignment.Center,
@@ -249,7 +237,6 @@ fun DetectorScreen(viewModel: MainViewModel) {
             }
         }
     )
-
     viewModel.uploadResult.observe(LocalLifecycleOwner.current) { response ->
         Log.d("DetectorScreen", "Response: $response")
         isLoading = false
@@ -260,44 +247,6 @@ fun DetectorScreen(viewModel: MainViewModel) {
     }
 }
 
-private suspend fun Context.getCameraProvider(): ProcessCameraProvider =
-    suspendCoroutine { continuation ->
-        ProcessCameraProvider.getInstance(this).also { cameraProvider ->
-            cameraProvider.addListener({
-                continuation.resume(cameraProvider.get())
-            }, ContextCompat.getMainExecutor(this))
-        }
-    }
-
-private fun captureImage(imageCapture: ImageCapture, context: Context, onImageCaptured: (Uri) -> Unit) {
-    val name = "Cultivitea_${System.currentTimeMillis()}.jpeg"
-    val contentValues = ContentValues().apply {
-        put(MediaStore.MediaColumns.DISPLAY_NAME, name)
-        put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
-            put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/CameraX-Image")
-        }
-    }
-    val outputOptions = ImageCapture.OutputFileOptions
-        .Builder(
-            context.contentResolver,
-            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-            contentValues
-        )
-        .build()
-    imageCapture.takePicture(
-        outputOptions,
-        ContextCompat.getMainExecutor(context),
-        object : ImageCapture.OnImageSavedCallback {
-            override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                outputFileResults.savedUri?.let { onImageCaptured(it) }
-            }
-
-            override fun onError(exception: ImageCaptureException) {
-                println("Failed $exception")
-            }
-        })
-}
 
 @Composable
 private fun loadImageBitmap(context: Context, uri: Uri): ImageBitmap {

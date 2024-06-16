@@ -2,7 +2,6 @@ package com.cultivitea.frontend.ui.screens
 
 import android.net.Uri
 import android.util.Log
-import android.content.Context
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
@@ -24,15 +23,13 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.cultivitea.frontend.helper.createImagePart
+import com.cultivitea.frontend.helper.getRealPathFromURI
 import com.cultivitea.frontend.ui.composables.CustomAppBar
 import com.cultivitea.frontend.ui.composables.ProfileImage
 import com.cultivitea.frontend.ui.theme.PrimaryBrown
 import com.cultivitea.frontend.ui.theme.PrimaryGreen
 import com.cultivitea.frontend.viewmodel.MainViewModel
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.asRequestBody
-import java.io.File
 
 @Composable
 fun EditProfileScreen(navController: NavController, viewModel: MainViewModel) {
@@ -220,7 +217,6 @@ fun EditProfileScreen(navController: NavController, viewModel: MainViewModel) {
             }
         }
     )
-
     viewModel.getSession().observe(LocalLifecycleOwner.current) { user ->
         Log.d("ProfileGet", "Response: $user")
         phoneNumber = user.phoneNumber
@@ -232,27 +228,6 @@ fun EditProfileScreen(navController: NavController, viewModel: MainViewModel) {
     }
 }
 
-private fun getRealPathFromURI(context: Context, uri: Uri): String {
-    val contentResolver = context.contentResolver
-    val filePathColumn = arrayOf(android.provider.MediaStore.Images.Media.DATA)
-    val cursor = contentResolver.query(uri, filePathColumn, null, null, null)
-    cursor?.moveToFirst()
-    val columnIndex = cursor?.getColumnIndex(filePathColumn[0])
-    val picturePath = cursor?.getString(columnIndex ?: 0)
-    cursor?.close()
-    return picturePath ?: uri.toString()
-}
 
-
-
-private fun createImagePart(imageUrl: String): MultipartBody.Part? {
-    return if (imageUrl.startsWith("https://storage.googleapis.com")) {
-        null
-    } else {
-        val file = File(imageUrl)
-        val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
-        MultipartBody.Part.createFormData("image", file.name, requestFile)
-    }
-}
 
 
