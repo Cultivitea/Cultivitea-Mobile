@@ -59,7 +59,17 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
         val errorBody = e.response()?.errorBody()?.string()
         return if (errorBody != null) {
             try {
-                JSONObject(errorBody).getString("message")
+                val json = JSONObject(errorBody)
+                val message = json.getString("message")
+                val details = json.optJSONObject("details")
+                if (details != null) {
+                    val detailMessages = details.keys().asSequence().map { key ->
+                        "$key: ${details.getString(key)}"
+                    }.joinToString(", ")
+                    "$message - $detailMessages"
+                } else {
+                    message
+                }
             } catch (jsonException: JSONException) {
                 "HTTP ${e.code()}: ${e.message()}"
             }

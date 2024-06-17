@@ -62,8 +62,9 @@ fun RegisterScreen(onNavigateToLogin: () -> Unit, viewModel: MainViewModel) {
     var usernameError by rememberSaveable { mutableStateOf<String?>(null) }
     var emailError by rememberSaveable { mutableStateOf<String?>(null) }
     var passwordError by rememberSaveable { mutableStateOf<String?>(null) }
+    var showSuccessDialog by rememberSaveable { mutableStateOf(false) }
 
-    Scaffold (containerColor = Color.White){ paddingValues ->
+    Scaffold (containerColor = Color.White) { paddingValues ->
         Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
             Column(
                 modifier = Modifier
@@ -231,9 +232,9 @@ fun RegisterScreen(onNavigateToLogin: () -> Unit, viewModel: MainViewModel) {
                             viewModel.registerUser(username, email, password) { signUpResponse, error ->
                                 isLoading = false
                                 if (signUpResponse != null && !signUpResponse.error!!) {
-                                    onNavigateToLogin()
+                                    showSuccessDialog = true
                                 } else {
-                                    registerError = signUpResponse?.message ?: "Unknown error"
+                                    registerError = error ?: "Unknown error"
                                     signUpResponse?.details?.let { details ->
                                         usernameError = details["username"]
                                         emailError = details["email"]
@@ -263,7 +264,7 @@ fun RegisterScreen(onNavigateToLogin: () -> Unit, viewModel: MainViewModel) {
                     ClickableAuthText(onNavigateToLogin, R.string.signin, R.string.already_have_account)
                 }
             }
-            if (registerError != null && !registerError.equals("Unknown error")) {
+            if (registerError != null && registerError != "Unknown error") {
                 AlertDialog(
                     onDismissRequest = { registerError = null },
                     confirmButton = {
@@ -276,13 +277,29 @@ fun RegisterScreen(onNavigateToLogin: () -> Unit, viewModel: MainViewModel) {
                             registerError ?: "",
                             style = MaterialTheme.typography.labelMedium.copy(
                                 fontSize = 18.sp,
-                                color = Color.Black,
                                 fontWeight = FontWeight.Normal
                             )
                         )
                     }
                 )
-
+            }
+            if (showSuccessDialog) {
+                AlertDialog(
+                    onDismissRequest = { showSuccessDialog = false },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            showSuccessDialog = false
+                            onNavigateToLogin()
+                        }) {
+                            Text("OK")
+                        }
+                    },
+                    text = {
+                        Text(
+                            "Account Successfully Created",
+                        )
+                    }
+                )
             }
             if (isLoading) {
                 Box(
@@ -295,5 +312,4 @@ fun RegisterScreen(onNavigateToLogin: () -> Unit, viewModel: MainViewModel) {
         }
     }
 }
-
 

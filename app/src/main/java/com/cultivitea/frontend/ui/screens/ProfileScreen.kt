@@ -16,11 +16,13 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Logout
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -50,6 +52,7 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
     var username by remember { mutableStateOf("") }
     var imageUrl by remember { mutableStateOf("") }
     var dateOfBirth by remember { mutableStateOf("") }
+    var showLogoutDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         containerColor = Color.White,
@@ -60,7 +63,7 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
                     AppBarAction(
                         icon = Icons.Filled.Logout,
                         contentDescription = "Logout",
-                        onClick = { viewModel.logout() }
+                        onClick = { showLogoutDialog = true }
                     )
                 )
             )
@@ -116,8 +119,7 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
                                 disabledIndicatorColor = Color.Transparent,
                                 disabledTextColor = Color.Black,
                                 disabledLabelColor = Color.Black,
-
-                                )
+                            )
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         TextField(
@@ -158,8 +160,7 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
                         Spacer(modifier = Modifier.height(8.dp))
                         TextField(
                             value = dateOfBirth,
-                            onValueChange = { dateOfBirth = it
-                            },
+                            onValueChange = { dateOfBirth = it },
                             label = { Text("Date of Birth (dd/mm/yyyy)", color = PrimaryGreen) },
                             modifier = Modifier.fillMaxWidth(),
                             enabled = false,
@@ -171,11 +172,38 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
                             )
                         )
                     }
-
                 }
+            }
+            if (showLogoutDialog) {
+                AlertDialog(
+                    onDismissRequest = { showLogoutDialog = false },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            showLogoutDialog = false
+                            viewModel.logout()
+                        }) {
+                            Text("Yes")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showLogoutDialog = false }) {
+                            Text("No")
+                        }
+                    },
+                    text = {
+                        Text(
+                            "Are you sure you want to logout?",
+                            style = MaterialTheme.typography.labelMedium.copy(
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Normal
+                            )
+                        )
+                    }
+                )
             }
         }
     )
+
     viewModel.getSession().observe(LocalLifecycleOwner.current) { user ->
         Log.d("ProfileGet", "Response: $user")
         phoneNumber = user.phoneNumber
@@ -183,6 +211,5 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
         username = user.username
         imageUrl = user.imageUrl
         dateOfBirth = user.dateOfBirth
-
     }
 }

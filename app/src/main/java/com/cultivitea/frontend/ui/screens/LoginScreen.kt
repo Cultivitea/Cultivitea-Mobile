@@ -44,6 +44,7 @@ fun LoginScreen(
     var emailError by rememberSaveable { mutableStateOf<String?>(null) }
     var passwordError by rememberSaveable { mutableStateOf<String?>(null) }
     var isLoading by rememberSaveable { mutableStateOf(false) }
+
     Scaffold(containerColor = Color.White) { paddingValues ->
         Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
             Column(
@@ -188,13 +189,14 @@ fun LoginScreen(
                                         onLoginSuccess()
                                     }
                                 } else {
-                                    loginError = loginResponse?.message ?: "Unknown error"
-                                    loginResponse?.details?.let { det ->
-                                        emailError = det["email"]
-                                        passwordError = det["password"]
+                                    Log.d("LoginScreen", "Error: $error")
+                                    loginError = error ?: "Unknown error"
+                                    loginResponse?.details?.let { details ->
+                                        emailError = details["email"]
+                                        passwordError = details["password"]
                                     }
                                     Log.d("LoginScreen", "Response: $loginResponse")
-                                    Log.d("LoginScreen", "Error registering user: $emailError, $passwordError")
+                                    Log.d("LoginScreen", "Error logging in: $emailError, $passwordError")
                                 }
                             }
                         },
@@ -231,7 +233,6 @@ fun LoginScreen(
                             loginError ?: "",
                             style = MaterialTheme.typography.labelMedium.copy(
                                 fontSize = 18.sp,
-                                color = Color.Black,
                                 fontWeight = FontWeight.Normal
                             )
                         )
@@ -249,5 +250,4 @@ fun LoginScreen(
             }
         }
     }
-
 }

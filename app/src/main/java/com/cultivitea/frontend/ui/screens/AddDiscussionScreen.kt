@@ -10,12 +10,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -36,26 +38,45 @@ import com.cultivitea.frontend.ui.theme.PrimaryGreen
 import com.cultivitea.frontend.viewmodel.MainViewModel
 
 @Composable
-fun AddDiscussionScreen(navController : NavController, viewModel: MainViewModel) {
+fun AddDiscussionScreen(navController: NavController, viewModel: MainViewModel) {
     var title by remember { mutableStateOf("") }
     var content by remember { mutableStateOf("") }
+    var titleError by remember { mutableStateOf<String?>(null) }
+    var contentError by remember { mutableStateOf<String?>(null) }
     var isLoading by remember { mutableStateOf(false) }
+    var addDiscussionError by remember { mutableStateOf<String?>(null) }
 
     Scaffold(
         containerColor = Color.White,
-        topBar = { CustomAppBar(screenTitle = "Add Discussion", onBackClick = {navController.popBackStack()}, showBack = true) },
+        topBar = {
+            CustomAppBar(
+                screenTitle = "Add Discussion",
+                onBackClick = { navController.popBackStack() },
+                showBack = true
+            )
+        },
         content = { paddingValues ->
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
             ) {
-                Column (modifier = Modifier.fillMaxSize().padding(16.dp)) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp)
+                ) {
                     TextField(
                         value = title,
-                        onValueChange = { title = it
+                        onValueChange = {
+                            title = it
+                            titleError = null
                         },
                         label = { Text("Discussion Title") },
-                        modifier = Modifier.fillMaxWidth().border(1.dp, PrimaryBrown, RoundedCornerShape(20.dp)),
+                        isError = titleError != null,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .border(1.dp, if (titleError != null) Color.Red else PrimaryBrown, RoundedCornerShape(20.dp)),
                         colors = TextFieldDefaults.colors(
                             cursorColor = Color.Black,
                             errorContainerColor = Color.Transparent,
@@ -66,16 +87,29 @@ fun AddDiscussionScreen(navController : NavController, viewModel: MainViewModel)
                             unfocusedContainerColor = Color.Transparent,
                             focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent,
-                            focusedLabelColor = Color.Black
+                            focusedLabelColor = if (titleError != null) Color.Red else Color.Black
                         )
                     )
+                    if (titleError != null) {
+                        Text(
+                            text = titleError ?: "",
+                            color = Color.Red,
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.padding(start = 16.dp)
+                        )
+                    }
                     Spacer(modifier = Modifier.height(8.dp))
                     TextField(
                         value = content,
-                        onValueChange = { content = it
+                        onValueChange = {
+                            content = it
+                            contentError = null
                         },
                         label = { Text("Content") },
-                        modifier = Modifier.fillMaxWidth().border(1.dp, PrimaryBrown, RoundedCornerShape(20.dp)),
+                        isError = contentError != null,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .border(1.dp, if (contentError != null) Color.Red else PrimaryBrown, RoundedCornerShape(20.dp)),
                         colors = TextFieldDefaults.colors(
                             cursorColor = Color.Black,
                             errorContainerColor = Color.Transparent,
@@ -86,9 +120,17 @@ fun AddDiscussionScreen(navController : NavController, viewModel: MainViewModel)
                             unfocusedContainerColor = Color.Transparent,
                             focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent,
-                            focusedLabelColor = Color.Black
+                            focusedLabelColor = if (contentError != null) Color.Red else Color.Black
                         )
                     )
+                    if (contentError != null) {
+                        Text(
+                            text = contentError ?: "",
+                            color = Color.Red,
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.padding(start = 16.dp)
+                        )
+                    }
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(
                         onClick = {
@@ -98,10 +140,11 @@ fun AddDiscussionScreen(navController : NavController, viewModel: MainViewModel)
                                 content = content
                             ) { response ->
                                 isLoading = false
-                                if (response != null) {
+                                if (response != null && !response.error!!) {
                                     navController.popBackStack()
                                 } else {
-                                    Log.e("AddDiscussionScreen", "Failed to edit profile")
+                                    addDiscussionError = response?.message ?: "Unknown error"
+                                    Log.e("AddDiscussionScreen", "Failed to add discussion")
                                 }
                             }
                         },
@@ -125,6 +168,21 @@ fun AddDiscussionScreen(navController : NavController, viewModel: MainViewModel)
                     ) {
                         CircularProgressIndicator()
                     }
+                }
+                if (addDiscussionError != null) {
+                    AlertDialog(
+                        onDismissRequest = { addDiscussionError = null },
+                        confirmButton = {
+                            TextButton(onClick = { addDiscussionError = null }) {
+                                Text("OK")
+                            }
+                        },
+                        text = {
+                            Text(
+                                addDiscussionError ?: "",
+                            )
+                        }
+                    )
                 }
             }
         }
