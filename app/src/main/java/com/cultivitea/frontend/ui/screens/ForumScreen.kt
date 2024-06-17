@@ -52,9 +52,6 @@ fun ForumScreen(navController: NavController, viewModel: MainViewModel) {
 
     Scaffold(
         containerColor = Color.White,
-//        topBar = {
-//            CustomAppBar(screenTitle = "Forum")
-//        },
         content = { paddingValues ->
             Box {
                 Column(modifier = Modifier

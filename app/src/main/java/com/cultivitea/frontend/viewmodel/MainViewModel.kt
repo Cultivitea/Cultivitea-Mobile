@@ -23,6 +23,9 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
     private val _comments = MutableLiveData<List<CommentItem>>()
     val comments: LiveData<List<CommentItem>> = _comments
 
+    private val _histories = MutableLiveData<List<HistoryItem>>()
+    val histories: LiveData<List<HistoryItem>> = _histories
+
     private var token = ""
     private var id = ""
 
@@ -77,6 +80,19 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
                     Log.e("MainViewModel", "Error predicting image: $message")
                     _uploadResult.postValue(PredictionResponse(error = true, message = message, null))
                 }
+            )
+        }
+    }
+
+    fun getDetectionHistory() {
+        viewModelScope.launch {
+            handleHttpRequest(
+                request = { repository.getDetectionHistory() },
+                onSuccess = { response ->
+                    Log.d("MainViewModel", "Detection history result: ${response.data}")
+                    _histories.postValue(response.data!!)
+                },
+                onError = { message -> Log.e("MainViewModel", "Error fetching detection history: $message") }
             )
         }
     }

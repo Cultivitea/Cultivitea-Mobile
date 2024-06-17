@@ -14,6 +14,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -35,6 +37,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.cultivitea.frontend.ui.composables.AppBarAction
 import com.cultivitea.frontend.ui.composables.CustomAppBar
 import com.cultivitea.frontend.ui.composables.ProfileImage
 import com.cultivitea.frontend.ui.theme.PrimaryGreen
@@ -53,10 +56,13 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
         topBar = {
             CustomAppBar(
                 screenTitle = "Profile",
-                showLogout = true,
-                onLogoutClick = {
-                    viewModel.logout()
-                }
+                actions = listOf(
+                    AppBarAction(
+                        icon = Icons.Filled.Logout,
+                        contentDescription = "Logout",
+                        onClick = { viewModel.logout() }
+                    )
+                )
             )
         },
         content = { paddingValues ->

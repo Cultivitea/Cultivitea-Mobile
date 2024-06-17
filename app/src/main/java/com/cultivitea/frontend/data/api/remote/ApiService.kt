@@ -3,6 +3,7 @@ package com.cultivitea.frontend.data.api.remote
 import com.cultivitea.frontend.data.api.response.AddCommentResponse
 import com.cultivitea.frontend.data.api.response.AddDiscussionResponse
 import com.cultivitea.frontend.data.api.response.CommentResponse
+import com.cultivitea.frontend.data.api.response.DetectionHistoryResponse
 import com.cultivitea.frontend.data.api.response.DiscussionResponse
 import com.cultivitea.frontend.data.api.response.EditProfileResponse
 import com.cultivitea.frontend.data.api.response.PredictionResponse
@@ -78,6 +79,7 @@ interface ApiService {
     suspend fun getDiscussionsComments(
         @Path("id") id: String,
     ): CommentResponse
+
     @FormUrlEncoded
     @POST("discussions/{id}/comments")
     suspend fun addDiscussionComments(
@@ -93,4 +95,9 @@ interface ApiService {
         @Field("title") title: String,
         @Field("content") content: String,
     ): AddDiscussionResponse
+
+    @GET("predict/histories")
+    suspend fun getDetectionHistory(
+        @Header("Cookie") token: String
+    ): DetectionHistoryResponse
 }

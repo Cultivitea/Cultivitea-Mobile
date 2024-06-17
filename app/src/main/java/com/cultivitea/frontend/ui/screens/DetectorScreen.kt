@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -30,19 +32,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.graphics.drawable.toBitmap
+import androidx.navigation.NavController
 import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.request.SuccessResult
 import com.cultivitea.frontend.helper.captureImage
 import com.cultivitea.frontend.helper.getCameraProvider
 import com.cultivitea.frontend.helper.uploadImage
+import com.cultivitea.frontend.ui.composables.AppBarAction
+import com.cultivitea.frontend.ui.composables.CustomAppBar
 import com.cultivitea.frontend.ui.theme.PrimaryBrown
 import com.cultivitea.frontend.ui.theme.PrimaryGreen
 import com.cultivitea.frontend.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun DetectorScreen(viewModel: MainViewModel) {
+fun DetectorScreen(navController : NavController, viewModel: MainViewModel) {
     var imageUri by remember { mutableStateOf<Uri?>(null) }
     var predictionResult by remember { mutableStateOf<String?>(null) }
     var predictionSuggestion by remember { mutableStateOf<String?>(null) }
@@ -80,10 +85,24 @@ fun DetectorScreen(viewModel: MainViewModel) {
             preview.setSurfaceProvider(previewView.surfaceProvider)
             cameraProviderBound = true
         }
+        predictionResult = null
+        predictionSuggestion = null
     }
 
     Scaffold(
         containerColor = Color.White,
+        topBar = {
+            CustomAppBar(
+                screenTitle = "Tea Disease Detector",
+                actions = listOf(
+                    AppBarAction(
+                        icon = Icons.Filled.History,
+                        contentDescription = "History",
+                        onClick = { navController.navigate("detectionHistory") }
+                    )
+                )
+            )
+        },
         content = { paddingValues ->
             Box(modifier = Modifier
                 .fillMaxSize()
@@ -102,8 +121,7 @@ fun DetectorScreen(viewModel: MainViewModel) {
                     ) {
                         if (imageUri == null) {
                             AndroidView({ previewView }, modifier = Modifier
-
-                                .padding(horizontal = 20.dp, vertical = 16.dp).requiredHeight(150.dp))
+                                .padding(horizontal = 20.dp, vertical = 10.dp).requiredHeight(150.dp))
                         } else {
                             Box(modifier = Modifier
                                 .padding(horizontal = 20.dp, vertical = 16.dp)) {
@@ -115,7 +133,6 @@ fun DetectorScreen(viewModel: MainViewModel) {
                             }
                         }
                     }
-                    Spacer(modifier = Modifier.height(16.dp))
                     val color = if (imageUri == null) PrimaryGreen else Color.Red
 
                     OutlinedButton(
@@ -193,7 +210,7 @@ fun DetectorScreen(viewModel: MainViewModel) {
                         )
                         if (predictionResult != null && predictionSuggestion != null) {
                             val resultColor = if (predictionResult == "Tea Healthy") PrimaryGreen else Color.Red
-                            Spacer(modifier = Modifier.height(32.dp))
+                            Spacer(modifier = Modifier.height(12.dp))
                             Text(
                                 text = "$predictionResult",
                                 style = MaterialTheme.typography.bodyLarge.copy(

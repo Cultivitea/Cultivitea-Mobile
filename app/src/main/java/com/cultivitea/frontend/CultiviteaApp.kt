@@ -13,6 +13,7 @@ import androidx.navigation.navArgument
 import com.cultivitea.frontend.data.api.response.DiscussionItem
 import com.cultivitea.frontend.ui.composables.BottomNavigationBar
 import com.cultivitea.frontend.ui.screens.AddDiscussionScreen
+import com.cultivitea.frontend.ui.screens.DetectionHistoryScreen
 import com.cultivitea.frontend.ui.screens.DetectorScreen
 import com.cultivitea.frontend.ui.screens.DiscussionDetailScreen
 import com.cultivitea.frontend.ui.screens.EditProfileScreen
@@ -32,6 +33,7 @@ sealed class Screen(val route: String) {
     object Profile : Screen("profile")
     object EditProfile : Screen("editprofile")
     object AddDiscussion : Screen("addDiscussion")
+    object DetectionHistory : Screen("detectionHistory")
 }
 
 @Composable
@@ -65,7 +67,7 @@ fun CultiviteaApp(viewModel: MainViewModel, startDestination: String = Screen.Lo
                     RegisterScreen(onNavigateToLogin = { navController.navigate(Screen.Login.route) }, viewModel)
                 }
                 composable(Screen.Detector.route) {
-                    DetectorScreen(viewModel)
+                    DetectorScreen(navController, viewModel)
                 }
                 composable(Screen.Forum.route) {
                     ForumScreen(navController, viewModel)
@@ -78,6 +80,9 @@ fun CultiviteaApp(viewModel: MainViewModel, startDestination: String = Screen.Lo
                 }
                 composable(Screen.AddDiscussion.route) {
                     AddDiscussionScreen(navController, viewModel) // Added AddDiscussionScreen composable
+                }
+                composable(Screen.DetectionHistory.route) {
+                    DetectionHistoryScreen(navController, viewModel)
                 }
                 composable(
                     "discussionDetail/{discussionItem}",

@@ -6,6 +6,7 @@ import com.cultivitea.frontend.data.api.remote.ApiService
 import com.cultivitea.frontend.data.api.response.AddCommentResponse
 import com.cultivitea.frontend.data.api.response.AddDiscussionResponse
 import com.cultivitea.frontend.data.api.response.CommentResponse
+import com.cultivitea.frontend.data.api.response.DetectionHistoryResponse
 import com.cultivitea.frontend.data.api.response.DiscussionResponse
 import com.cultivitea.frontend.data.api.response.EditProfileResponse
 import com.cultivitea.frontend.data.api.response.PredictionResponse
@@ -60,6 +61,11 @@ class Repository private constructor(
     suspend fun predict(file: MultipartBody.Part): PredictionResponse {
         val token = "access_token=" + userPreference.getSession().first().token
         return apiService.predict(token, image = file)
+    }
+
+    suspend fun getDetectionHistory(): DetectionHistoryResponse {
+        val token = "access_token=" + userPreference.getSession().first().token
+        return apiService.getDetectionHistory(token)
     }
 
     suspend fun register(name: String, email: String, password: String): SignUpResponse {

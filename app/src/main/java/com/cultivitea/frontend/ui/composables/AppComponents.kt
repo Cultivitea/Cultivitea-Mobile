@@ -24,7 +24,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -41,6 +40,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -51,6 +51,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import coil.compose.rememberAsyncImagePainter
 import com.cultivitea.frontend.data.api.response.CommentItem
 import com.cultivitea.frontend.data.api.response.DiscussionItem
+import com.cultivitea.frontend.data.api.response.HistoryDetail
 import com.cultivitea.frontend.helper.getTimeAgo
 import com.cultivitea.frontend.ui.nav.NavItem
 import com.cultivitea.frontend.ui.theme.GrayInput
@@ -126,30 +127,28 @@ fun VideoCard(title: String, description: String, videoUrl: String, thumbnailRes
 fun CustomAppBar(
     screenTitle: String,
     onBackClick: () -> Unit = {},
-    showLogout: Boolean = false,
-    onLogoutClick: () -> Unit = {},
-    showBack : Boolean = false
+    showBack: Boolean = false,
+    actions: List<AppBarAction> = emptyList()
 ) {
     CenterAlignedTopAppBar(
         title = {
             Text(text = screenTitle)
         },
         navigationIcon = {
-            if (showBack){
+            if (showBack) {
                 IconButton(onClick = onBackClick, colors = IconButtonDefaults.iconButtonColors(
                     contentColor = PrimaryGreen
                 )) {
                     Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
                 }
             }
-
         },
         actions = {
-            if (showLogout) {
-                IconButton(onClick = onLogoutClick, colors = IconButtonDefaults.iconButtonColors(
+            actions.forEach { action ->
+                IconButton(onClick = action.onClick, colors = IconButtonDefaults.iconButtonColors(
                     contentColor = PrimaryGreen
                 )) {
-                    Icon(Icons.Filled.Logout, contentDescription = "Logout")
+                    Icon(action.icon, contentDescription = action.contentDescription)
                 }
             }
         },
@@ -160,6 +159,11 @@ fun CustomAppBar(
     )
 }
 
+data class AppBarAction(
+    val icon: ImageVector,
+    val contentDescription: String,
+    val onClick: () -> Unit
+)
 
 @Composable
 fun ProfileImage(imageUrl: String?) {
@@ -264,6 +268,37 @@ fun CommentCard(item: CommentItem){
             Spacer(modifier = Modifier.height(8.dp))
             Text(item.content!!, style = MaterialTheme.typography.labelMedium.copy(color = Color.Black, fontSize = 16.sp, fontWeight = FontWeight.Light, lineHeight = 18.sp) )
         }
+    }
+}
 
+@Composable
+fun HistoryCard(item: HistoryDetail){
+    OutlinedCard(shape = RoundedCornerShape(4.dp), colors = CardDefaults.cardColors(containerColor = Color.White), modifier= Modifier
+        .fillMaxWidth().height(150.dp), border = BorderStroke(1.dp, PrimaryBrown)) {
+        Row(modifier = Modifier.padding(12.dp)) {
+            Column (modifier = Modifier.weight(2f)){
+                Text(item.result!!, style = MaterialTheme.typography.titleMedium, color = PrimaryGreen, fontSize = 18.sp)
+                Spacer(modifier = Modifier.padding(5.dp))
+                Text(text = getTimeAgo(item.createdAt!!), style = MaterialTheme.typography.labelSmall.copy(
+                    fontSize = 12.sp,
+                    color = GrayInput,
+                    fontWeight = FontWeight.SemiBold
+                ), )
+            }
+            Spacer(modifier = Modifier.width(16.dp))
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+                    .align(Alignment.Top)
+            ) {
+                Image(
+                    painter = rememberAsyncImagePainter(item.imageUrl!!),
+                    contentDescription = null,
+                    modifier = Modifier.size(120.dp),
+                    contentScale = ContentScale.Crop
+                )
+            }
+        }
     }
 }
