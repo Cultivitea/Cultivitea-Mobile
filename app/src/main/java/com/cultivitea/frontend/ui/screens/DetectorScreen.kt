@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -38,8 +39,6 @@ import coil.request.ImageRequest
 import coil.request.SuccessResult
 import com.cultivitea.frontend.helper.captureImage
 import com.cultivitea.frontend.helper.getCameraProvider
-import com.cultivitea.frontend.helper.getSuggestion
-import com.cultivitea.frontend.helper.trimDisease
 import com.cultivitea.frontend.helper.uploadImage
 import com.cultivitea.frontend.ui.composables.AppBarAction
 import com.cultivitea.frontend.ui.composables.CustomAppBar
@@ -209,7 +208,7 @@ fun DetectorScreen(navController : NavController, viewModel: MainViewModel) {
                     ) {
                         Text(
                             text = "Hasil Deteksi",
-                            style = MaterialTheme.typography.titleMedium.copy(fontSize = 24.sp, color = PrimaryBrown)
+                            style = MaterialTheme.typography.titleMedium.copy(fontSize = 20.sp, color = PrimaryBrown)
                         )
                         if (predictionResult != null && predictionSuggestion != null) {
                             val resultColor = if (predictionResult == "Healthy") PrimaryGreen else Color.Red
@@ -217,18 +216,20 @@ fun DetectorScreen(navController : NavController, viewModel: MainViewModel) {
                             Text(
                                 text = "$predictionResult",
                                 style = MaterialTheme.typography.bodyLarge.copy(
-                                    fontSize = 16.sp,
+                                    fontSize = 18.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = resultColor
                                 ),
                                 modifier = Modifier.align(Alignment.CenterHorizontally)
                             )
+                            Spacer(modifier = Modifier.height(12.dp))
                             Text(
                                 text = "$predictionSuggestion",
                                 style = MaterialTheme.typography.bodyLarge.copy(
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = resultColor
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Normal,
+                                    color = Color.Black,
+                                    textAlign = TextAlign.Center
                                 ),
                                 modifier = Modifier.align(Alignment.CenterHorizontally)
                             )
@@ -261,8 +262,8 @@ fun DetectorScreen(navController : NavController, viewModel: MainViewModel) {
     viewModel.uploadResult.observe(LocalLifecycleOwner.current) { response ->
         Log.d("DetectorScreen", "Response: $response")
         isLoading = false
-        predictionResult = trimDisease(response.data?.result!!)
-        predictionSuggestion = getSuggestion(response.data.suggestion)
+        predictionResult = response.data?.result!!
+        predictionSuggestion = response.data.suggestion
         predictionError = response?.error
         predictionMessage = response?.message
     }

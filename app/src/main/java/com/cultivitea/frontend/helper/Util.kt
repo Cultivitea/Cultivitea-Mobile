@@ -166,23 +166,3 @@ fun captureImage(imageCapture: ImageCapture, context: Context, onImageCaptured: 
         })
 }
 
-fun trimDisease(disease: String): String {
-    return disease.replace("Tea ", "").trim()
-}
-
-fun getSuggestion(disease: String) : String{
-    if (disease.contains("Algal Spot")){
-        return("Segera berikan fungsida tembaga")
-    } else if (disease.contains("Gray Blight")){
-        return("Segera potong bagian yang terinfeksi")
-    } else if (disease.contains("Brown Blight")){
-        return("Segera berikan fungisida dan potong bagian yang terinfeksi")
-    } else if (disease.contains("Helopeltis")){
-        return("Segera berikan pestisida")
-    } else if (disease.contains("Red Spot")){
-        return("Segera berikan fungisida dan potong bagian yang terinfeksi")
-    }
-   else {
-        return("Teh anda dalam kondisi baik!")
-    }
-}
