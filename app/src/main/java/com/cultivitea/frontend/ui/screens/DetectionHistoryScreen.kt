@@ -39,7 +39,7 @@ fun DetectionHistoryScreen(navController : NavController, viewModel: MainViewMod
     Scaffold(
         containerColor = Color.White,
         topBar = {
-            CustomAppBar(screenTitle = "History", onBackClick = {navController.popBackStack()}, showBack = true)
+            CustomAppBar(screenTitle = "Riwayat", onBackClick = {navController.popBackStack()}, showBack = true)
         },
         content = { paddingValues ->
             Column (modifier = Modifier
@@ -47,8 +47,8 @@ fun DetectionHistoryScreen(navController : NavController, viewModel: MainViewMod
                 .padding(paddingValues)
                 .padding(horizontal = 16.dp)
                 .verticalScroll(rememberScrollState())) {
-                history?.forEach { comment ->
-                    HistoryCard(comment.history!!)
+                history?.forEach { detection ->
+                    HistoryCard(detection.history!!)
                     Spacer(modifier = Modifier.padding(8.dp))
                 }
             }

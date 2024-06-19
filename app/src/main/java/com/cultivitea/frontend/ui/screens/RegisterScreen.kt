@@ -191,7 +191,7 @@ fun RegisterScreen(onNavigateToLogin: () -> Unit, viewModel: MainViewModel) {
                             else
                                 Icons.Filled.VisibilityOff
 
-                            val description = if (passwordVisible) "Hide password" else "Show password"
+                            val description = if (passwordVisible) "Sembunyikan password" else "Tampilkan password"
 
                             IconButton(onClick = { passwordVisible = !passwordVisible }) {
                                 Icon(imageVector = image, contentDescription = description)
@@ -297,7 +297,7 @@ fun RegisterScreen(onNavigateToLogin: () -> Unit, viewModel: MainViewModel) {
                     },
                     text = {
                         Text(
-                            "Account successfully created.",
+                            "Berhasil membuat akun.",
                             color = NavBrown,
                             fontSize = 18.sp
                         )

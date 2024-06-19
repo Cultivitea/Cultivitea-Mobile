@@ -51,7 +51,7 @@ fun AddDiscussionScreen(navController: NavController, viewModel: MainViewModel) 
         containerColor = Color.White,
         topBar = {
             CustomAppBar(
-                screenTitle = "Add Discussion",
+                screenTitle = "Tambah Diskusi",
                 onBackClick = { navController.popBackStack() },
                 showBack = true
             )
@@ -73,7 +73,7 @@ fun AddDiscussionScreen(navController: NavController, viewModel: MainViewModel) 
                             title = it
                             titleError = null
                         },
-                        label = { Text("Discussion Title") },
+                        label = { Text("Judul Diskusi") },
                         isError = titleError != null,
                         modifier = Modifier
                             .fillMaxWidth()
@@ -106,7 +106,7 @@ fun AddDiscussionScreen(navController: NavController, viewModel: MainViewModel) 
                             content = it
                             contentError = null
                         },
-                        label = { Text("Content") },
+                        label = { Text("Konten") },
                         isError = contentError != null,
                         modifier = Modifier
                             .fillMaxWidth()
@@ -144,7 +144,7 @@ fun AddDiscussionScreen(navController: NavController, viewModel: MainViewModel) 
                                 if (response != null && !response.error!!) {
                                     navController.popBackStack()
                                 } else {
-                                    addDiscussionError = response?.message ?: "Unknown error"
+                                    addDiscussionError = response?.message ?: "Terjadi error saat menambahkan diskusi"
                                     Log.e("AddDiscussionScreen", "Failed to add discussion")
                                 }
                             }
@@ -153,7 +153,7 @@ fun AddDiscussionScreen(navController: NavController, viewModel: MainViewModel) 
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
-                            text = "Save",
+                            text = "Simpan",
                             style = MaterialTheme.typography.labelMedium.copy(
                                 fontSize = 18.sp,
                                 color = Color.White,

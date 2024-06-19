@@ -59,11 +59,11 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
         containerColor = Color.White,
         topBar = {
             CustomAppBar(
-                screenTitle = "Profile",
+                screenTitle = "Profil",
                 actions = listOf(
                     AppBarAction(
                         icon = Icons.Filled.Logout,
-                        contentDescription = "Logout",
+                        contentDescription = "Keluar",
                         onClick = { showLogoutDialog = true }
                     )
                 )
@@ -97,7 +97,7 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
                                 border = BorderStroke(1.dp, PrimaryGreen)
                             ) {
                                 Text(
-                                    text = "Edit Profile",
+                                    text = "Ubah Profil",
                                     style = MaterialTheme.typography.labelMedium.copy(
                                         fontSize = 18.sp,
                                         fontWeight = FontWeight.Normal,
@@ -145,7 +145,7 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
                                     phoneNumber = it
                                 }
                             },
-                            label = { Text("Phone Number", color = PrimaryGreen) },
+                            label = { Text("Nomor Telepon", color = PrimaryGreen) },
                             modifier = Modifier.fillMaxWidth(),
                             keyboardOptions = KeyboardOptions.Default.copy(
                                 keyboardType = KeyboardType.Number
@@ -162,7 +162,7 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
                         TextField(
                             value = dateOfBirth,
                             onValueChange = { dateOfBirth = it },
-                            label = { Text("Date of Birth (dd/mm/yyyy)", color = PrimaryGreen) },
+                            label = { Text("Tanggal Lahir (dd/mm/yyyy)", color = PrimaryGreen) },
                             modifier = Modifier.fillMaxWidth(),
                             enabled = false,
                             colors = TextFieldDefaults.colors(
@@ -183,20 +183,20 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
                             showLogoutDialog = false
                             viewModel.logout()
                         }) {
-                            Text("Yes",
+                            Text("Ya",
                                 color = NavBrown)
                         }
                     },
                     dismissButton = {
                         TextButton(onClick = { showLogoutDialog = false }) {
-                            Text("No",
+                            Text("Tidak",
                                 color = NavBrown
                             )
                         }
                     },
                     text = {
                         Text(
-                            "Are you sure you want to logout?",
+                            "Apakah anda yakin akan keluar?",
                             color = NavBrown,
                             fontSize = 18.sp
                         )

@@ -83,16 +83,16 @@ fun getTimeAgo(createdAt: String): String {
                 val formattedDate = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
                 formattedDate.format(date)
             }
-            days > 0 -> "${days.toInt()} ${if (days.toInt() == 1) "day" else "days"} ago"
+            days > 0 -> "${days.toInt()} ${if (days.toInt() == 1) "hari" else "hari"} yang lalu"
             else -> {
                 val seconds = diff / 1000
                 val minutes = seconds / 60
                 val hours = minutes / 60
 
                 when {
-                    hours > 0 -> "${hours.toInt()} ${if (hours.toInt() == 1) "hour" else "hours"} ago"
-                    minutes > 0 -> "${minutes.toInt()} ${if (minutes.toInt() == 1) "minute" else "minutes"} ago"
-                    else -> "just now"
+                    hours > 0 -> "${hours.toInt()} ${if (hours.toInt() == 1) "jam" else "jam"} yang lalu"
+                    minutes > 0 -> "${minutes.toInt()} ${if (minutes.toInt() == 1) "menit" else "menit"} yang lalu"
+                    else -> "baru saja"
                 }
             }
         }
@@ -164,4 +164,25 @@ fun captureImage(imageCapture: ImageCapture, context: Context, onImageCaptured: 
                 println("Failed $exception")
             }
         })
+}
+
+fun trimDisease(disease: String): String {
+    return disease.replace("Tea ", "").trim()
+}
+
+fun getSuggestion(disease: String) : String{
+    if (disease.contains("Algal Spot")){
+        return("Segera berikan fungsida tembaga")
+    } else if (disease.contains("Gray Blight")){
+        return("Segera potong bagian yang terinfeksi")
+    } else if (disease.contains("Brown Blight")){
+        return("Segera berikan fungisida dan potong bagian yang terinfeksi")
+    } else if (disease.contains("Helopeltis")){
+        return("Segera berikan pestisida")
+    } else if (disease.contains("Red Spot")){
+        return("Segera berikan fungisida dan potong bagian yang terinfeksi")
+    }
+   else {
+        return("Teh anda dalam kondisi baik!")
+    }
 }

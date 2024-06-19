@@ -53,6 +53,7 @@ import com.cultivitea.frontend.data.api.response.CommentItem
 import com.cultivitea.frontend.data.api.response.DiscussionItem
 import com.cultivitea.frontend.data.api.response.HistoryDetail
 import com.cultivitea.frontend.helper.getTimeAgo
+import com.cultivitea.frontend.helper.trimDisease
 import com.cultivitea.frontend.ui.nav.NavItem
 import com.cultivitea.frontend.ui.theme.GrayInput
 import com.cultivitea.frontend.ui.theme.PrimaryBrown
@@ -99,7 +100,7 @@ fun VideoCard(title: String, description: String, videoUrl: String, thumbnailRes
                     shape = RoundedCornerShape(4.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen),
                 ) {
-                    Text(text = "Watch Now", style = MaterialTheme.typography.bodySmall, color = Color.White, fontSize = 14.sp)
+                    Text(text = "Tonton", style = MaterialTheme.typography.bodySmall, color = Color.White, fontSize = 14.sp)
                 }
             }
 
@@ -277,7 +278,7 @@ fun HistoryCard(item: HistoryDetail){
         .fillMaxWidth().height(150.dp), border = BorderStroke(1.dp, PrimaryBrown)) {
         Row(modifier = Modifier.padding(12.dp)) {
             Column (modifier = Modifier.weight(2f)){
-                Text(item.result!!, style = MaterialTheme.typography.titleMedium, color = PrimaryGreen, fontSize = 18.sp)
+                Text(trimDisease(item.result!!), style = MaterialTheme.typography.titleMedium, color = PrimaryGreen, fontSize = 18.sp)
                 Spacer(modifier = Modifier.padding(5.dp))
                 Text(text = getTimeAgo(item.createdAt!!), style = MaterialTheme.typography.labelSmall.copy(
                     fontSize = 12.sp,

@@ -64,7 +64,7 @@ fun DiscussionDetailScreen(navController: NavController, discussionItem: Discuss
     Scaffold(
         containerColor = Color.White,
         topBar = {
-            CustomAppBar(screenTitle = "Discussions", onBackClick = {navController.popBackStack()}, showBack = true)
+            CustomAppBar(screenTitle = "Diskusi", onBackClick = {navController.popBackStack()}, showBack = true)
         },
         content = { paddingValues ->
             Column(modifier = Modifier
@@ -98,7 +98,7 @@ fun DiscussionDetailScreen(navController: NavController, discussionItem: Discuss
                 HorizontalDivider(color = GrayInput.copy(alpha = 0.3f), thickness = 1.dp, modifier = Modifier.padding(vertical = 20.dp))
                 Column  {
                     Text(
-                        text = "Comments",
+                        text = "Komentar",
                         style = MaterialTheme.typography.titleMedium.copy(color = NavBrown, fontSize = 24.sp)
                     )
                     Spacer(modifier = Modifier.padding(8.dp))
@@ -113,7 +113,7 @@ fun DiscussionDetailScreen(navController: NavController, discussionItem: Discuss
                         onValueChange = {
                             addComment = it
                         },
-                        placeholder = { Text(text = "Write a comment...", style = MaterialTheme.typography.labelMedium.copy(color = GrayInput, fontSize = 12.sp, fontWeight = FontWeight.Normal))},
+                        placeholder = { Text(text = "Tulis komentar...", style = MaterialTheme.typography.labelMedium.copy(color = GrayInput, fontSize = 12.sp, fontWeight = FontWeight.Normal))},
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 8.dp),
@@ -146,7 +146,7 @@ fun DiscussionDetailScreen(navController: NavController, discussionItem: Discuss
                                 containerColor = PrimaryGreen
                             )
                         ) {
-                            Icon(Icons.Filled.Send, contentDescription = "Send", Modifier.size(20.dp))
+                            Icon(Icons.Filled.Send, contentDescription = "Kirim", Modifier.size(20.dp))
                         }
                     }
                 }

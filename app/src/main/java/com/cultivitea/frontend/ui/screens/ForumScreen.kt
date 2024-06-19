@@ -59,7 +59,7 @@ fun ForumScreen(navController: NavController, viewModel: MainViewModel) {
                     .padding(16.dp)
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())) {
-                    Text(text = "Featured Videos", style = MaterialTheme.typography.titleMedium.copy(color = NavBrown, fontSize = 24.sp))
+                    Text(text = "Rekomendasi", style = MaterialTheme.typography.titleMedium.copy(color = NavBrown, fontSize = 24.sp))
                     Spacer(modifier = Modifier.padding(8.dp))
                     Column {
                         VideoCard(
@@ -89,7 +89,7 @@ fun ForumScreen(navController: NavController, viewModel: MainViewModel) {
                     ) {
                         Text(
                             modifier = Modifier.padding(vertical = 12.dp),
-                            text = "Discussion Threads",
+                            text = "Forum Diskusi",
                             style = MaterialTheme.typography.titleMedium.copy(color = NavBrown, fontSize = 24.sp)
                         )
                         Button(
@@ -101,7 +101,7 @@ fun ForumScreen(navController: NavController, viewModel: MainViewModel) {
                             ),
                             border = BorderStroke(1.dp, PrimaryGreen)
                         ) {
-                            Icon(Icons.Filled.AddToPhotos, contentDescription = "Back")
+                            Icon(Icons.Filled.AddToPhotos, contentDescription = "Kembali")
 
                         }
                     }

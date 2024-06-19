@@ -38,6 +38,8 @@ import coil.request.ImageRequest
 import coil.request.SuccessResult
 import com.cultivitea.frontend.helper.captureImage
 import com.cultivitea.frontend.helper.getCameraProvider
+import com.cultivitea.frontend.helper.getSuggestion
+import com.cultivitea.frontend.helper.trimDisease
 import com.cultivitea.frontend.helper.uploadImage
 import com.cultivitea.frontend.ui.composables.AppBarAction
 import com.cultivitea.frontend.ui.composables.CustomAppBar
@@ -94,11 +96,11 @@ fun DetectorScreen(navController : NavController, viewModel: MainViewModel) {
         containerColor = Color.White,
         topBar = {
             CustomAppBar(
-                screenTitle = "Tea Disease Detector",
+                screenTitle = "Deteksi Penyakit Teh",
                 actions = listOf(
                     AppBarAction(
                         icon = Icons.Filled.History,
-                        contentDescription = "History",
+                        contentDescription = "Riwayat",
                         onClick = { navController.navigate("detectionHistory") }
                     )
                 )
@@ -166,7 +168,7 @@ fun DetectorScreen(navController : NavController, viewModel: MainViewModel) {
                         border = BorderStroke(1.dp, color)
                     ) {
                         Text(
-                            text = if (imageUri == null) "Scan" else "Delete",
+                            text = if (imageUri == null) "Deteksi" else "Hapus Gambar",
                             style = MaterialTheme.typography.labelMedium.copy(
                                 fontSize = 18.sp,
                                 color = color,
@@ -190,7 +192,7 @@ fun DetectorScreen(navController : NavController, viewModel: MainViewModel) {
                         border = BorderStroke(1.dp, PrimaryGreen)
                     ) {
                         Text(
-                            text = "Pick from Gallery",
+                            text = "Pilih Gambar",
                             style = MaterialTheme.typography.labelMedium.copy(
                                 fontSize = 18.sp,
                                 color = PrimaryGreen,
@@ -206,11 +208,11 @@ fun DetectorScreen(navController : NavController, viewModel: MainViewModel) {
                             .padding(horizontal = 20.dp)
                     ) {
                         Text(
-                            text = "Scan Result",
+                            text = "Hasil Deteksi",
                             style = MaterialTheme.typography.titleMedium.copy(fontSize = 24.sp, color = PrimaryBrown)
                         )
                         if (predictionResult != null && predictionSuggestion != null) {
-                            val resultColor = if (predictionResult == "Tea Healthy") PrimaryGreen else Color.Red
+                            val resultColor = if (predictionResult == "Healthy") PrimaryGreen else Color.Red
                             Spacer(modifier = Modifier.height(12.dp))
                             Text(
                                 text = "$predictionResult",
@@ -259,8 +261,8 @@ fun DetectorScreen(navController : NavController, viewModel: MainViewModel) {
     viewModel.uploadResult.observe(LocalLifecycleOwner.current) { response ->
         Log.d("DetectorScreen", "Response: $response")
         isLoading = false
-        predictionResult = response?.data?.result
-        predictionSuggestion = response?.data?.suggestion
+        predictionResult = trimDisease(response.data?.result!!)
+        predictionSuggestion = getSuggestion(response.data.suggestion)
         predictionError = response?.error
         predictionMessage = response?.message
     }

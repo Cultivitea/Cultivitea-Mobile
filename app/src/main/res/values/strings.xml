@@ -1,16 +1,16 @@
 <resources>
     <string name="app_name">Cultivitea</string>
     <string name="username">Username</string>
-    <string name="login">Login</string>
+    <string name="login">Masuk</string>
     <string name="password">Password</string>
     <string name="logo">Logo</string>
-    <string name="login_description">Please sign in to continue.</string>
-    <string name="signin">Sign In</string>
-    <string name="dont_have_account">"Don’t have an account? "</string>
-    <string name="signup">Sign Up</string>
+    <string name="login_description">Silakan masuk untuk melanjutkan.</string>
+    <string name="signin">Masuk</string>
+    <string name="dont_have_account">"Belum memiliki akun? "</string>
+    <string name="signup">Daftar</string>
     <string name="email">Email</string>
-    <string name="sign_up">Sign Up</string>
-    <string name="already_have_account">"Already have an account? "</string>
-    <string name="register">Register</string>
-    <string name="register_description">Please register to login.</string>
+    <string name="sign_up">Daftar</string>
+    <string name="already_have_account">"Sudah memiliki akun? "</string>
+    <string name="register">Registrasi</string>
+    <string name="register_description">Silakan daftar untuk memulai.</string>
 </resources>

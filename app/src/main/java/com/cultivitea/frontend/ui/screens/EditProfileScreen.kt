@@ -50,7 +50,7 @@ fun EditProfileScreen(navController: NavController, viewModel: MainViewModel) {
 
     Scaffold(
         containerColor = Color.White,
-        topBar = { CustomAppBar(screenTitle = "Edit Profile", onBackClick = {navController.popBackStack()}, showBack = true) },
+        topBar = { CustomAppBar(screenTitle = "Ubah Profil", onBackClick = {navController.popBackStack()}, showBack = true) },
         content = { paddingValues ->
             Box(modifier = Modifier
                 .fillMaxSize()
@@ -78,7 +78,7 @@ fun EditProfileScreen(navController: NavController, viewModel: MainViewModel) {
                         border = BorderStroke(1.dp, PrimaryGreen)
                     ) {
                         Text(
-                            text = "Change Picture",
+                            text = "Ubah Gambar",
                             style = MaterialTheme.typography.labelMedium.copy(
                                 fontSize = 18.sp,
                                 color = PrimaryGreen,
@@ -137,7 +137,7 @@ fun EditProfileScreen(navController: NavController, viewModel: MainViewModel) {
                                 phoneNumber = it
                             }
                         },
-                        label = { Text("Phone Number") },
+                        label = { Text("Nomor Telepon") },
                         modifier = Modifier.fillMaxWidth().border(1.dp, PrimaryBrown, RoundedCornerShape(20.dp)),
                         keyboardOptions = KeyboardOptions.Default.copy(
                             keyboardType = KeyboardType.Number
@@ -160,7 +160,7 @@ fun EditProfileScreen(navController: NavController, viewModel: MainViewModel) {
                         value = dateOfBirth,
                         onValueChange = { dateOfBirth = it
                         },
-                        label = { Text("Date of Birth (dd/mm/yyyy)") },
+                        label = { Text("Tanggal Lahir (dd/mm/yyyy)") },
                         modifier = Modifier.fillMaxWidth().border(1.dp, PrimaryBrown, RoundedCornerShape(20.dp)),
                         colors = TextFieldDefaults.colors(
                             cursorColor = Color.Black,
@@ -198,7 +198,7 @@ fun EditProfileScreen(navController: NavController, viewModel: MainViewModel) {
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
-                            text = "Save",
+                            text = "Simpan",
                             style = MaterialTheme.typography.labelMedium.copy(
                                 fontSize = 18.sp,
                                 color = Color.White,
