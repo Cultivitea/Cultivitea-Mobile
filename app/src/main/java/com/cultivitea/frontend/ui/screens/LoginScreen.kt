@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cultivitea.frontend.R
 import com.cultivitea.frontend.ui.composables.ClickableAuthText
+import com.cultivitea.frontend.ui.theme.NavBrown
 import com.cultivitea.frontend.ui.theme.PrimaryBrown
 import com.cultivitea.frontend.ui.theme.PrimaryGreen
 import com.cultivitea.frontend.viewmodel.MainViewModel
@@ -225,16 +226,15 @@ fun LoginScreen(
                     onDismissRequest = { loginError = null },
                     confirmButton = {
                         TextButton(onClick = { loginError = null }) {
-                            Text("OK")
+                            Text("OK",
+                                color = PrimaryGreen)
                         }
                     },
                     text = {
                         Text(
                             loginError ?: "",
-                            style = MaterialTheme.typography.labelMedium.copy(
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Normal
-                            )
+                            color = NavBrown,
+                            fontSize = 18.sp
                         )
                     }
                 )
@@ -245,7 +245,7 @@ fun LoginScreen(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(color = NavBrown)
                 }
             }
         }

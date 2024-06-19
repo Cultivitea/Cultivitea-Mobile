@@ -42,6 +42,7 @@ import androidx.navigation.NavController
 import com.cultivitea.frontend.ui.composables.AppBarAction
 import com.cultivitea.frontend.ui.composables.CustomAppBar
 import com.cultivitea.frontend.ui.composables.ProfileImage
+import com.cultivitea.frontend.ui.theme.NavBrown
 import com.cultivitea.frontend.ui.theme.PrimaryGreen
 import com.cultivitea.frontend.viewmodel.MainViewModel
 
@@ -182,21 +183,22 @@ fun ProfileScreen(navController: NavController, viewModel: MainViewModel) {
                             showLogoutDialog = false
                             viewModel.logout()
                         }) {
-                            Text("Yes")
+                            Text("Yes",
+                                color = NavBrown)
                         }
                     },
                     dismissButton = {
                         TextButton(onClick = { showLogoutDialog = false }) {
-                            Text("No")
+                            Text("No",
+                                color = NavBrown
+                            )
                         }
                     },
                     text = {
                         Text(
                             "Are you sure you want to logout?",
-                            style = MaterialTheme.typography.labelMedium.copy(
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Normal
-                            )
+                            color = NavBrown,
+                            fontSize = 18.sp
                         )
                     }
                 )

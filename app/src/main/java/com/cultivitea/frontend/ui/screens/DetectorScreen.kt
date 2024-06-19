@@ -41,6 +41,7 @@ import com.cultivitea.frontend.helper.getCameraProvider
 import com.cultivitea.frontend.helper.uploadImage
 import com.cultivitea.frontend.ui.composables.AppBarAction
 import com.cultivitea.frontend.ui.composables.CustomAppBar
+import com.cultivitea.frontend.ui.theme.NavBrown
 import com.cultivitea.frontend.ui.theme.PrimaryBrown
 import com.cultivitea.frontend.ui.theme.PrimaryGreen
 import com.cultivitea.frontend.viewmodel.MainViewModel
@@ -224,7 +225,8 @@ fun DetectorScreen(navController : NavController, viewModel: MainViewModel) {
                                 text = "$predictionSuggestion",
                                 style = MaterialTheme.typography.bodyLarge.copy(
                                     fontSize = 16.sp,
-                                    fontWeight = FontWeight.Bold
+                                    fontWeight = FontWeight.Bold,
+                                    color = resultColor
                                 ),
                                 modifier = Modifier.align(Alignment.CenterHorizontally)
                             )
@@ -248,7 +250,7 @@ fun DetectorScreen(navController : NavController, viewModel: MainViewModel) {
                         contentAlignment = Alignment.Center,
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        CircularProgressIndicator()
+                        CircularProgressIndicator(color = NavBrown)
                     }
                 }
             }

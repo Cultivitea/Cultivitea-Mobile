@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cultivitea.frontend.R
 import com.cultivitea.frontend.ui.composables.ClickableAuthText
+import com.cultivitea.frontend.ui.theme.NavBrown
 import com.cultivitea.frontend.ui.theme.PrimaryBrown
 import com.cultivitea.frontend.ui.theme.PrimaryGreen
 import com.cultivitea.frontend.viewmodel.MainViewModel
@@ -269,16 +270,15 @@ fun RegisterScreen(onNavigateToLogin: () -> Unit, viewModel: MainViewModel) {
                     onDismissRequest = { registerError = null },
                     confirmButton = {
                         TextButton(onClick = { registerError = null }) {
-                            Text("OK")
+                            Text("OK",
+                                color = PrimaryGreen)
                         }
                     },
                     text = {
                         Text(
                             registerError ?: "",
-                            style = MaterialTheme.typography.labelMedium.copy(
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Normal
-                            )
+                            color = NavBrown,
+                            fontSize = 18.sp
                         )
                     }
                 )
@@ -291,12 +291,15 @@ fun RegisterScreen(onNavigateToLogin: () -> Unit, viewModel: MainViewModel) {
                             showSuccessDialog = false
                             onNavigateToLogin()
                         }) {
-                            Text("OK")
+                            Text("OK",
+                                color = PrimaryGreen)
                         }
                     },
                     text = {
                         Text(
-                            "Account Successfully Created",
+                            "Account successfully created.",
+                            color = NavBrown,
+                            fontSize = 18.sp
                         )
                     }
                 )
@@ -306,7 +309,7 @@ fun RegisterScreen(onNavigateToLogin: () -> Unit, viewModel: MainViewModel) {
                     contentAlignment = Alignment.Center,
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(color = NavBrown)
                 }
             }
         }

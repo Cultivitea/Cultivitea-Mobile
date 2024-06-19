@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.cultivitea.frontend.ui.composables.CustomAppBar
+import com.cultivitea.frontend.ui.theme.NavBrown
 import com.cultivitea.frontend.ui.theme.PrimaryBrown
 import com.cultivitea.frontend.ui.theme.PrimaryGreen
 import com.cultivitea.frontend.viewmodel.MainViewModel
@@ -166,7 +167,7 @@ fun AddDiscussionScreen(navController: NavController, viewModel: MainViewModel) 
                         contentAlignment = Alignment.Center,
                         modifier = Modifier.fillMaxSize()
                     ) {
-                        CircularProgressIndicator()
+                        CircularProgressIndicator(color = NavBrown)
                     }
                 }
                 if (addDiscussionError != null) {
@@ -174,12 +175,16 @@ fun AddDiscussionScreen(navController: NavController, viewModel: MainViewModel) 
                         onDismissRequest = { addDiscussionError = null },
                         confirmButton = {
                             TextButton(onClick = { addDiscussionError = null }) {
-                                Text("OK")
+                                Text("OK",
+                                    color = PrimaryGreen)
+
                             }
                         },
                         text = {
                             Text(
                                 addDiscussionError ?: "",
+                                color = NavBrown,
+                                fontSize = 18.sp
                             )
                         }
                     )
